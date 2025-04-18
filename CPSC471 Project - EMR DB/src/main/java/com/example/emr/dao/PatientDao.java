@@ -29,6 +29,29 @@ public class PatientDao {
     }
 
     /**
+     * Retrieves a patient by SSN.
+     * Returns the Patient object if found, otherwise null.
+     */
+    public Patient getPatientBySsn(int ssn) {
+        String sql = "SELECT * FROM Patient WHERE Ssn = ?";
+        List<Patient> list = jdbcTemplate.query(
+                sql,
+                new Object[]{ ssn },
+                (rs, rowNum) -> {
+                    Patient patient = new Patient();
+                    patient.setSsn(rs.getInt("Ssn"));
+                    patient.setFirstName(rs.getString("FName"));
+                    patient.setLastName(rs.getString("LName"));
+                    patient.setAge(rs.getInt("Age"));
+                    patient.setWeightKg(rs.getDouble("Weight_kg"));
+                    patient.setHeightCm(rs.getDouble("Height_cm"));
+                    return patient;
+                }
+        );
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    /**
      * Retrieves all patient records.
      */
     public List<Patient> getAllPatients() {
