@@ -1,0 +1,58 @@
+body {
+  height: 100vh;
+  margin: 0;
+
+  background: url("../IMG/loginmain.png") no-repeat center center fixed;
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: #f0f0f0;
+
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden; /* optional: prevents scrollbars if image is large */
+}
+
+
+
+  .card {
+    background-color: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s ease-in-out;
+  }
+
+body::before, body::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 100px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  body::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgb(179, 199, 235), transparent);
+  }
+
+  body::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgb(179, 199, 235), transparent);
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
