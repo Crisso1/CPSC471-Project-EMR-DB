@@ -1,11 +1,16 @@
+// src/test/java/com/example/emr/dao/EncounterDaoTest.java
 package com.example.emr.dao;
 
 import com.example.emr.model.Encounter;
+import com.example.emr.model.Doctor;
+import com.example.emr.model.Patient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -18,6 +23,32 @@ public class EncounterDaoTest {
 
     @Autowired
     private EncounterDao encounterDao;
+
+    @Autowired
+    private PatientDao patientDao;
+
+    @Autowired
+    private DoctorDao doctorDao;
+
+    private Patient samplePatient() {
+        Patient p = new Patient();
+        p.setSsn(111222333);
+        p.setFirstName("Alice");
+        p.setLastName("Smith");
+        p.setAge(30);
+        p.setWeightKg(65.5);
+        p.setHeightCm(170.2);
+        return p;
+    }
+
+    private Doctor sampleDoctor() {
+        Doctor d = new Doctor();
+        d.setSsn(444555666);
+        d.setFName("DrJohn");
+        d.setLName("Doe");
+        d.setWorkStart(Date.valueOf("2020-01-01"));
+        return d;
+    }
 
     private Encounter sampleEncounter() {
         Encounter e = new Encounter();
@@ -32,6 +63,13 @@ public class EncounterDaoTest {
         e.setNotes("Patient in good health");
         e.setFollowUpDate(LocalDate.of(2026, 4, 17));
         return e;
+    }
+
+    @BeforeEach
+    void setupForeignKeys() {
+        // Ensure patient and doctor exist before any encounter is inserted
+        patientDao.addPatient(samplePatient());
+        doctorDao.addDoctor(sampleDoctor());
     }
 
     @Test

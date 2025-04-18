@@ -38,10 +38,10 @@ public class VitalSignsDao {
             VitalSigns v = new VitalSigns();
             v.setEncounterId(rs.getInt("encounter_id"));
             v.setMeasuredAt(rs.getTimestamp("measured_at").toLocalDateTime());
-            v.setTemperature(rs.getObject("temperature", Double.class));
+            v.setTemperature(rs.getDouble("temperature"));
             v.setBloodPressure(rs.getString("blood_pressure"));
-            v.setHeartRate(rs.getObject("heart_rate", Integer.class));
-            v.setRespiratoryRate(rs.getObject("respiratory_rate", Integer.class));
+            v.setHeartRate(rs.getInt("heart_rate"));
+            v.setRespiratoryRate(rs.getInt("respiratory_rate"));
             return v;
         });
     }
@@ -53,10 +53,10 @@ public class VitalSignsDao {
             VitalSigns v = new VitalSigns();
             v.setEncounterId(rs.getInt("encounter_id"));
             v.setMeasuredAt(rs.getTimestamp("measured_at").toLocalDateTime());
-            v.setTemperature(rs.getObject("temperature", Double.class));
+            v.setTemperature(rs.getDouble("temperature"));
             v.setBloodPressure(rs.getString("blood_pressure"));
-            v.setHeartRate(rs.getObject("heart_rate", Integer.class));
-            v.setRespiratoryRate(rs.getObject("respiratory_rate", Integer.class));
+            v.setHeartRate(rs.getInt("heart_rate"));
+            v.setRespiratoryRate(rs.getInt("respiratory_rate"));
             return v;
         });
     }

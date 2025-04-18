@@ -43,8 +43,8 @@ public class PatientDaoTest {
         assertEquals("Alice", retrieved.getFirstName());
         assertEquals("Smith", retrieved.getLastName());
         assertEquals(30, retrieved.getAge());
-        assertEquals(new BigDecimal("65.5"), retrieved.getWeightKg());
-        assertEquals(new BigDecimal("170.2"), retrieved.getHeightCm());
+        assertEquals(65.5, retrieved.getWeightKg());
+        assertEquals(170.2, retrieved.getHeightCm());
     }
 
     @Test
