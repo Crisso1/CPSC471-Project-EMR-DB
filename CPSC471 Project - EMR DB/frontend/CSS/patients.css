@@ -1,0 +1,115 @@
+/* === Shared Background + Font === */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: url("/IMG/BG5.png") no‑repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* ———————— REMOVE HORIZONTAL FADE OVERLAYS ———————— */
+body::before,
+body::after {
+    display: none !important;
+}
+
+/* === Top‑Left Icon Buttons === */
+.top-icons {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    gap: 1rem;
+    z-index: 1000;
+}
+
+.icon-btn {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    color: #3e4044;
+    font-size: 1.25rem;
+    transition: background .3s;
+}
+
+.icon-btn:hover {
+    background: rgba(255,255,255,1);
+}
+
+/* === Card Panel === */
+.card-panel {
+    background: rgba(131, 183, 233, 0.2);
+    border: 3px solid #013e77;
+    padding: 3rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 1400px;
+    text-align: center; /* ← centers the inline‑block h2 */
+}
+
+.card-panel h2 {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    background: rgb(251, 251, 255);
+    border: 2px solid #013e77;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    color: #1677ff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* === Patient Table Styles === */
+.table thead th {
+    vertical-align: middle;
+    font-weight: 600;
+    background-color: #cbe1ff;
+    color: #000000;
+}
+
+.table td,
+.table th {
+    padding: 0.75rem;
+}
+
+.table tbody tr:hover {
+    background-color: #f4f4f4;
+    transition: background-color 0.2s ease;
+}
+
+/* === Search Bar Styling === */
+input[type="text"] {
+    max-width: 400px;
+    border-radius: .705rem;
+}
+
+input[type="text"]::placeholder {
+    color: #888;
+    opacity: 0.9;
+}
+
+input[type="text"]:focus {
+    border-color: #1677ff;
+    box-shadow: 0 0 0 0.2rem rgba(22, 119, 255, 0.25);
+}
+
+/* === Add Patient Button === */
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
