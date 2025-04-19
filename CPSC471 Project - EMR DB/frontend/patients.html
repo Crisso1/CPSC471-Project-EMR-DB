@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Patients – MediVault</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Your Styles -->
+    <link rel="stylesheet" href="CSS/dashboard.css" />
+    <link rel="stylesheet" href="CSS/patients.css" />
+</head>
+<body>
+<!-- Top‑Left Icon Buttons -->
+<div class="top-icons">
+    <a href="dashboard.html" class="icon-btn"><i class="bi bi-house-fill"></i></a>
+    <a href="login.html" class="icon-btn"><i class="bi bi-box-arrow-right"></i></a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container-fluid py-5 min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="card-panel w-100">
+            <h2 class="text-center mb-4 text-primary fw-bold"><i class="bi bi-people-fill"></i> Patient Records</h2>
+
+            <!-- Search Bar -->
+            <div class="mb-4 text-center">
+                <input type="text" class="form-control w-50 mx-auto" placeholder="Search patients by name or ID...">
+            </div>
+
+            <!-- Patient Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover text-center align-middle bg-white">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>DOB</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="patientsTable">
+                    <!-- JS will dynamically populate rows here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add Patient Button -->
+            <div class="text-center mt-4">
+                <a href="add_patient.html" class="btn btn-success px-4 py-2">
+                    <i class="bi bi-person-plus-fill me-2"></i> Add New Patient
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="JS/patients.js"></script>
+</body>
+</html>
