@@ -1,0 +1,119 @@
+/* === Body & Background === */
+body {
+    margin: 0; padding: 0; height: 100vh;
+    background: url("/IMG/BG5.png") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+  }
+  body::before,
+  body::after {
+    content: ""; position: absolute; left: 0; right: 0;
+    height: 100px; z-index: 0; pointer-events: none;
+  }
+  body::before {
+    top: 0; background: linear-gradient(to bottom, rgb(179,199,235), transparent);
+  }
+  body::after {
+    bottom: 0; background: linear-gradient(to top, rgb(179,199,235), transparent);
+  }
+
+  /* === Intro Overlay === */
+  #intro {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    background-color: #fff; z-index: 9999; opacity: 1;
+  }
+  #intro.move-up {
+    opacity: 0; transition: opacity 0.8s ease-in-out;
+  }
+  #intro .logo {
+    display: flex; align-items: center;
+    opacity: 0; transform: translateX(-100vw);
+    animation: intro-slide-in 2s ease-out forwards;
+  }
+  #intro .logo-icon {
+    font-size: 4rem; color: #00d4ff; margin-right: .5rem;
+    animation: icon-rotate 1s ease-out forwards;
+  }
+  #intro .logo-text {
+    font-size: 3rem; font-weight: 900;
+    background: linear-gradient(90deg,#1677ff,#00d4ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  @keyframes intro-slide-in { to { opacity: 1; transform: translateX(0); } }
+  @keyframes icon-rotate     { from { transform: rotate(-90deg); } to { transform: rotate(0); } }
+
+  /* === Hide main until intro completes === */
+  .main-content { visibility: hidden; }
+
+  /* === Top‑Left Icon Buttons === */
+  .top-icons {
+    position: fixed; top: 1rem; left: 1rem;
+    display: flex; gap: 1rem; z-index: 1000;
+  }
+  .icon-btn {
+    width: 3rem; height: 3rem;
+    background: rgba(255,255,255,0.8); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    color: #1677ff; font-size: 1.25rem; transition: background .3s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,1); }
+
+  /* === Transparent Panel === */
+  .card-panel {
+    background: rgba(131, 183, 233, 0.12);
+    border: 3px solid #013e77;
+    padding: 3rem;
+    border-radius: 1rem;
+  }
+
+  /* === Card Grid Wrapper === */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    gap: 2rem; width: 100%; max-width: 1400px;
+  }
+
+  /* === Card Styling === */
+  .card {
+    background-color: #fff;
+    border-radius: 20px;
+    border: 3px solid #0056b3;
+    padding: 3rem 2rem;
+    min-height: 360px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    text-align: center;
+    transform-origin: center center;
+    /* strong zoom transition */
+    transition: transform 0.15s ease-out !important,
+                box-shadow  0.25s ease-out !important;
+  }
+  .card:hover {
+    transform: scale(1.15) !important;
+    box-shadow: 0 22px 60px rgba(0,0,0,0.45) !important;
+  }
+
+  /* === Button Styles === */
+  .card button {
+    display: block; width: 100%;
+    margin: .5rem 0; padding: .75rem;
+    font-size: 1rem; border: none; border-radius: 8px;
+    background-color: #1677ff; color: #fff;
+    cursor: pointer; transition: background-color .2s ease-in-out;
+  }
+  .card button:hover { background-color: #0f5bcc; }
+
+  /* === Slide‑In Animations (1.2s) === */
+  @keyframes slideInLeft  { from { opacity: 0; transform: translateX(-100vw); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes slideInDown  { from { opacity: 0; transform: translateY(-100vh); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideInRight { from { opacity: 0; transform: translateX(100vw); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes slideInUp    { from { opacity: 0; transform: translateY(100vh); } to { opacity: 1; transform: translateY(0); } }
+
+  .slide-in-left  { animation: slideInLeft   1.2s ease-out forwards; }
+  .slide-in-down  { animation: slideInDown   1.2s ease-out forwards; }
+  .slide-in-right { animation: slideInRight  1.2s ease-out forwards; }
+  .slide-in-up    { animation: slideInUp     1.2s ease-out forwards; }
