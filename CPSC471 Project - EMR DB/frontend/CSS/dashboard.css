@@ -1,7 +1,7 @@
 /* === Body & Background === */
 body {
     margin: 0; padding: 0; height: 100vh;
-    background: url("/IMG/BG5.png") no-repeat center center fixed;
+    background: url("../IMG/BG5.png") no-repeat center center fixed;
     background-size: cover;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex; flex-direction: column; align-items: center;
@@ -117,3 +117,4 @@ body {
   .slide-in-down  { animation: slideInDown   1.2s ease-out forwards; }
   .slide-in-right { animation: slideInRight  1.2s ease-out forwards; }
   .slide-in-up    { animation: slideInUp     1.2s ease-out forwards; }
+
