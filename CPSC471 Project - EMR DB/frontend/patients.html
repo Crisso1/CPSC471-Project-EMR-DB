@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Patients – MediVault</title>
+    <title>Patients – MediVault</title>
 
-    <!-- Bootstrap & Icons -->
+    <!-- Bootstrap CSS & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
@@ -17,18 +17,18 @@
 <!-- Top‑Left Icon Buttons -->
 <div class="top-icons">
     <a href="dashboard.html" class="icon-btn"><i class="bi bi-house-fill"></i></a>
-    <a href="login.html" class="icon-btn"><i class="bi bi-box-arrow-right"></i></a>
+    <a href="login.html"       class="icon-btn"><i class="bi bi-box-arrow-right"></i></a>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
     <div class="container-fluid py-5 min-vh-100 d-flex align-items-center justify-content-center">
         <div class="card-panel w-100">
-            <h2 class="text-center mb-4 text-primary fw-bold"><i class="bi bi-people-fill"></i> Patient Records</h2>
+            <h2><i class="bi bi-people-fill me-2"></i>Patient Records</h2>
 
             <!-- Search Bar -->
             <div class="mb-4 text-center">
-                <input type="text" class="form-control w-50 mx-auto" placeholder="Search patients by name or ID...">
+                <input type="text" class="form-control" placeholder="Search patients by name or ID...">
             </div>
 
             <!-- Patient Table -->
@@ -36,31 +36,69 @@
                 <table class="table table-bordered table-striped table-hover text-center align-middle bg-white">
                     <thead class="table-primary">
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>DOB</th>
-                        <th>Address</th>
-                        <th>Contact</th>
-                        <th>Actions</th>
+                        <th>ID</th><th>Name</th><th>DOB</th><th>Address</th><th>Contact</th><th>Actions</th>
                     </tr>
                     </thead>
                     <tbody id="patientsTable">
-                    <!-- JS will dynamically populate rows here -->
+                    <!-- JS will populate rows here -->
                     </tbody>
                 </table>
             </div>
 
             <!-- Add Patient Button -->
             <div class="text-center mt-4">
-                <a href="add_patient.html" class="btn btn-success px-4 py-2">
-                    <i class="bi bi-person-plus-fill me-2"></i> Add New Patient
-                </a>
+                <button
+                        id="addPatientBtn"
+                        type="button"
+                        class="btn btn-success px-4 py-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addPatientModal">
+                    <i class="bi bi-person-plus-fill me-2"></i>Add New Patient
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JS -->
+<!-- Add Patient Modal -->
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="addPatientForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPatientModalLabel">Add New Patient</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="addName" class="form-label">Name</label>
+                        <input type="text" id="addName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addDob" class="form-label">DOB</label>
+                        <input type="date" id="addDob" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addAddress" class="form-label">Address</label>
+                        <input type="text" id="addAddress" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addContact" class="form-label">Contact</label>
+                        <input type="text" id="addContact" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle (for modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Your Patient JS -->
 <script src="JS/patients.js"></script>
 </body>
 </html>

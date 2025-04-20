@@ -1,82 +1,135 @@
-// JS/patients.js
+// File: JS/patients.js
 
 document.addEventListener("DOMContentLoaded", () => {
-    const tableBody  = document.getElementById("patientsTable");
+    const tableBody   = document.getElementById("patientsTable");
     const searchInput = document.querySelector('input[type="text"]');
+    const addForm     = document.getElementById("addPatientForm");
+    const main        = document.querySelector(".main-content");
 
-    // 1) Fetch data from backend
+    // Helper: append a single patient row
+    function renderTableRow(p) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p.id}</td>
+        <td>${p.name}</td>
+        <td>${p.dob}</td>
+        <td>${p.address}</td>
+        <td>${p.contact}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-secondary me-1">View Patient</button>
+          <button class="btn btn-sm btn-outline-info me-1">Edit</button>
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </td>
+      `;
+      tableBody.appendChild(tr);
+    }
+
+    // Render full list
+    function renderTable(data) {
+      tableBody.innerHTML = "";
+      data.forEach(renderTableRow);
+    }
+
+    // Fetch existing patients
     fetch("/api/patients")
-      .then(res => res.json())
-      .then(data => renderTable(data))
-      .catch(err => {
-        console.error("Error fetching patients:", err);
-        // Fallback sample data
+      .then(r => r.json())
+      .then(renderTable)
+      .catch(() => {
+        console.warn("Fetch failed, using sample data");
         renderTable([
-          { id: 101, name: "Alice Wong",      dob: "1990-02-28", address: "42 Sunset Blvd", contact: "(403) 555-2345" },
-          { id: 102, name: "Brandon Lee",      dob: "1985-08-12", address: "18 Foothill Dr", contact: "(587) 555-7890" },
-          { id: 103, name: "Catherine Rivera", dob: "1999-11-07", address: "905 Prairie St", contact: "(403) 555-9876" },
-          { id: 101, name: "Alice Wong",      dob: "1990-02-28", address: "42 Sunset Blvd", contact: "(403) 555-2345" },
-          { id: 102, name: "Brandon Lee",      dob: "1985-08-12", address: "18 Foothill Dr", contact: "(587) 555-7890" },
-          { id: 103, name: "Catherine Rivera", dob: "1999-11-07", address: "905 Prairie St", contact: "(403) 555-9876" },
-          { id: 101, name: "Alice Wong",      dob: "1990-02-28", address: "42 Sunset Blvd", contact: "(403) 555-2345" },
-          { id: 102, name: "Brandon Lee",      dob: "1985-08-12", address: "18 Foothill Dr", contact: "(587) 555-7890" },
-          { id: 103, name: "Catherine Rivera", dob: "1999-11-07", address: "905 Prairie St", contact: "(403) 555-9876" },
-          { id: 101, name: "Alice Wong",      dob: "1990-02-28", address: "42 Sunset Blvd", contact: "(403) 555-2345" },
-          { id: 102, name: "Brandon Lee",      dob: "1985-08-12", address: "18 Foothill Dr", contact: "(587) 555-7890" },
-          { id: 103, name: "Catherine Rivera", dob: "1999-11-07", address: "905 Prairie St", contact: "(403) 555-9876" },
+          { id:101, name:"Alice Wong",    dob:"1990-02-28", address:"42 Sunset Blvd", contact:"(403) 555-2345" },
+          { id:102, name:"Brandon Lee",   dob:"1985-08-12", address:"18 Foothill Dr",  contact:"(587) 555-7890" },
+          { id:103, name:"Catherine Rivera", dob:"1999-11-07", address:"905 Prairie St", contact:"(403) 555-9876" }
         ]);
       });
 
-    // 2) Search/filter functionality
+    // Live search
     searchInput.addEventListener("input", () => {
-      const filter = searchInput.value.toLowerCase();
+      const q = searchInput.value.toLowerCase();
       Array.from(tableBody.rows).forEach(row => {
-        const [idCell, nameCell] = row.querySelectorAll("td");
-        const text = (idCell.textContent + nameCell.textContent).toLowerCase();
-        row.style.display = text.includes(filter) ? "" : "none";
+        const [id, name] = row.querySelectorAll("td");
+        row.style.display = (id.textContent + name.textContent).toLowerCase().includes(q)
+          ? "" : "none";
       });
     });
 
-    // 3) Render table rows
-    function renderTable(patients) {
-      tableBody.innerHTML = "";
-      patients.forEach(p => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${p.id}</td>
-          <td>${p.name}</td>
-          <td>${p.dob}</td>
-          <td>${p.address}</td>
-          <td>${p.contact}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-info me-2">Edit</button>
-            <button class="btn btn-sm btn-outline-secondary me-2">View Patient</button>
-            <button class="btn btn-sm btn-outline-danger">Delete</button>
-          </td>
-        `;
-        tableBody.appendChild(tr);
+    // Delete handler
+    tableBody.addEventListener("click", e => {
+      if (e.target.matches(".btn-outline-danger")) {
+        const row       = e.target.closest("tr");
+        const patientId = row.children[0].textContent;
+        if (!confirm(`Delete patient ${patientId}?`)) return;
+        row.remove();
+        fetch(`/api/patients/${patientId}`, { method: "DELETE" })
+          .catch(console.error);
+      }
+    });
 
-        // Attach handlers (customize these functions as needed)
-        tr.querySelector('.btn-outline-info').addEventListener('click', () => editPatient(p.id));
-        tr.querySelector('.btn-outline-secondary').addEventListener('click', () => viewPatient(p.id));
-        tr.querySelector('.btn-outline-danger').addEventListener('click', () => deletePatient(p.id));
+    // Edit handler (prompt)
+    tableBody.addEventListener("click", e => {
+      if (e.target.matches(".btn-outline-info")) {
+        const row       = e.target.closest("tr");
+        const cells     = row.children;
+        const id        = cells[0].textContent;
+        const newName    = prompt("Name:", cells[1].textContent);
+        if (newName===null) return;
+        const newDob     = prompt("DOB:", cells[2].textContent);
+        if (newDob===null) return;
+        const newAddr    = prompt("Address:", cells[3].textContent);
+        if (newAddr===null) return;
+        const newContact = prompt("Contact:", cells[4].textContent);
+        if (newContact===null) return;
+        cells[1].textContent = newName;
+        cells[2].textContent = newDob;
+        cells[3].textContent = newAddr;
+        cells[4].textContent = newContact;
+
+        fetch(`/api/patients/${id}`, {
+          method: "PUT",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ id:+id, name:newName, dob:newDob, address:newAddr, contact:newContact })
+        })
+        .then(r => { if (!r.ok) alert("Update failed on server"); })
+        .catch(()=>alert("Error updating on server"));
+      }
+    });
+
+    // View handler (stub)
+    tableBody.addEventListener("click", e => {
+      if (e.target.matches(".btn-outline-secondary")) {
+        const id = e.target.closest("tr").children[0].textContent;
+        alert(`View details for patient ${id}`);
+      }
+    });
+
+    // Add Patient form submit
+    addForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const name    = addForm.addName.value;
+      const dob     = addForm.addDob.value;
+      const address = addForm.addAddress.value;
+      const contact = addForm.addContact.value;
+
+      // POST to backend
+      fetch("/api/patients", {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ name, dob, address, contact })
+      })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(p => {
+        renderTableRow(p);
+        addForm.reset();
+        bootstrap.Modal.getInstance(document.getElementById("addPatientModal")).hide();
+      })
+      .catch(err => {
+        console.warn("Add failed, adding locally:", err);
+        renderTableRow({ id:Date.now(), name, dob, address, contact });
+        addForm.reset();
+        bootstrap.Modal.getInstance(document.getElementById("addPatientModal")).hide();
       });
-    }
+    });
 
-    // 4) Action handlers
-    function editPatient(id) {
-      window.location.href = `edit_patient.html?id=${id}`;
-    }
-
-    function viewPatient(id) {
-      window.location.href = `view_patient.html?id=${id}`;
-    }
-
-    function deletePatient(id) {
-      // TODO: implement delete logic (e.g., fetch DELETE /api/patients/:id)
-      console.log(`Delete patient ${id}`);
-    }
-
-    // 5) Ensure content is visible if previously hidden
-    document.querySelector('.main-content').style.visibility = 'visible';
-});
+    // Reveal content
+    main.style.visibility = "visible";
+  });
