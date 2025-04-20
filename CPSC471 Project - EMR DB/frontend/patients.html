@@ -96,7 +96,129 @@
     </div>
 </div>
 
-<!-- Bootstrap JS Bundle (for modal) -->
+<!-- View Patient Modal -->
+<div class="modal fade" id="viewPatientModal" tabindex="-1" aria-labelledby="viewPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewPatientModalLabel">Patient Assessment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Basic Info -->
+                <h6 class="fw-bold">Basic Info</h6>
+                <p id="vpName">Name: </p>
+                <p id="vpAge">Age: </p>
+                <p id="vpWeight">Weight: </p>
+                <p id="vpHeight">Height: </p>
+                <hr>
+                <!-- Assessments List + New -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold">Encounters</h6>
+                    <button
+                            id="createAssessmentBtn"
+                            type="button"
+                            class="btn btn-sm btn-outline-success"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addAssessmentModal">
+                        Create New Assessment
+                    </button>
+                </div>
+                <div class="list-group mb-3" id="assessmentList">
+                    <!-- assessment buttons go here -->
+                </div>
+                <!-- Assessment Details -->
+                <div id="assessmentDetails">
+                    <h6 class="fw-bold">Assessment Details</h6>
+                    <!-- Option A: a blank paragraph -->
+                    <br>
+                    <!-- Option B: a div with margin -->
+                    <div style="margin-bottom:1rem;"></div>
+                    <p><strong>Chief Complaint:</strong> <span id="detailComplaint"></span></p>
+                    <p><strong>Medical History:</strong> <span id="detailHistory"></span></p>
+                    <p><strong>Doctor's Notes:</strong> <span id="detailNotes"></span></p>
+                    <p><strong>Diagnosis:</strong> <span id="detailDiagnosis"></span></p>
+                    <p><strong>Treatment Plan:</strong> <span id="detailPlan"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="vitals.html" class="btn btn-outline-primary">Full Vitals</a>
+                <a href="allergies.html" class="btn btn-outline-warning">Full Allergies</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Assessment Modal (Horizontal Layout) -->
+<div class="modal fade" id="addAssessmentModal" tabindex="-1" aria-labelledby="addAssessmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form id="addAssessmentForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAssessmentModalLabel">New Patient Assessment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Left: Basic Info -->
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" id="assessName" class="form-control" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Age</label>
+                                <input type="text" id="assessAge" class="form-control" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Weight</label>
+                                <input type="text" id="assessWeight" class="form-control" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Height</label>
+                                <input type="text" id="assessHeight" class="form-control" />
+                            </div>
+                        </div>
+                        <!-- Right: Assessment Fields -->
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="assessmentDate" class="form-label">Date of Visit</label>
+                                <input type="date" id="assessmentDate" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="assessmentComplaint" class="form-label">Chief Complaint</label>
+                                <input type="text" id="assessmentComplaint" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="assessmentHistory" class="form-label">Medical History</label>
+                                <textarea id="assessmentHistory" class="form-control" rows="2" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assessmentNotes" class="form-label">Doctor's Notes</label>
+                                <textarea id="assessmentNotes" class="form-control" rows="2" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assessmentDiagnosis" class="form-label">Diagnosis</label>
+                                <textarea id="assessmentDiagnosis" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assessmentPlan" class="form-label">Treatment Plan</label>
+                                <textarea id="assessmentPlan" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Assessment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle (for modals) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Your Patient JS -->
 <script src="JS/patients.js"></script>
