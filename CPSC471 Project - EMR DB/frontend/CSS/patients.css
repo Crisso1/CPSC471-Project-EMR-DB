@@ -137,3 +137,17 @@ body {
     color: #ffffff !important;                              /* darker on hover */
     border-color: #3798ff !important;
   }
+
+  /* Custom Modal Footer Buttons */
+.modal-footer .btn-secondary {
+    background-color: #666666;
+    border-color: #666666;
+    color: rgb #ffffff;
+  }
+
+  .modal-footer .btn-outline-success {
+    background-color: #007d0dbd;
+    color: #ffffff;
+    border-color: #007d0dbd;
+  }
+
