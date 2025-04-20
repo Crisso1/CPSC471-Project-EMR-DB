@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Patients – MediVault</title>
+
+    <!-- Bootstrap CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Your Styles -->
+    <link rel="stylesheet" href="CSS/dashboard.css" />
+    <link rel="stylesheet" href="CSS/patients.css" />
+</head>
+<body>
+<!-- Top‑Left Icon Buttons -->
+<div class="top-icons">
+    <a href="dashboard.html" class="icon-btn"><i class="bi bi-house-fill"></i></a>
+    <a href="login.html"       class="icon-btn"><i class="bi bi-box-arrow-right"></i></a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" style="visibility:hidden;">
+    <div class="container-fluid py-5 min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="card-panel w-100">
+            <h2><i class="bi bi-people-fill me-2"></i>Patient Records</h2>
+
+            <!-- Search Bar -->
+            <div class="mb-4 text-center">
+                <input type="text" class="form-control" placeholder="Search patients by name or ID…" />
+            </div>
+
+            <!-- Patient Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover text-center align-middle bg-white">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>ID</th><th>Name</th><th>DOB</th><th>Address</th><th>Contact</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="patientsTable">
+                    <!-- JS will populate rows here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add Patient Button -->
+            <div class="text-center mt-4">
+                <button
+                        id="addPatientBtn"
+                        type="button"
+                        class="btn btn-success px-4 py-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addPatientModal">
+                    <i class="bi bi-person-plus-fill me-2"></i>Add New Patient
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Patient Modal -->
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="addPatientForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPatientModalLabel">Add New Patient</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="addName" class="form-label">Name</label>
+                        <input type="text" id="addName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addDob" class="form-label">DOB</label>
+                        <input type="date" id="addDob" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addAddress" class="form-label">Address</label>
+                        <input type="text" id="addAddress" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addContact" class="form-label">Contact</label>
+                        <input type="text" id="addContact" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Patient Modal -->
+<div class="modal fade" id="viewPatientModal" tabindex="-1" aria-labelledby="viewPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width:90vw;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewPatientModalLabel">Patient Assessment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Left: Encounters -->
+                    <div class="col-md-3 pe-4 border-end">
+                        <h6 class="fw-bold">Encounters</h6><br>
+                        <div class="list-group mb-3" id="assessmentList"></div>
+                    </div>
+                    <!-- Center: Assessment Details -->
+                    <div class="col-md-6 px-4">
+                        <h6 class="fw-bold">Assessment Details</h6><br>
+                        <p><strong>Chief Complaint:</strong> <span id="detailComplaint"></span></p>
+                        <p><strong>Medical History:</strong> <span id="detailHistory"></span></p>
+                        <p><strong>Prescription Medications:</strong> <span id="detailMedications"></span></p>
+                        <p><strong>Doctor's Notes:</strong> <span id="detailNotes"></span></p>
+                        <p><strong>Diagnosis:</strong> <span id="detailDiagnosis"></span></p>
+                        <p><strong>Treatment Plan:</strong> <span id="detailPlan"></span></p>
+                    </div>
+                    <!-- Right: Basic Info, Vitals, Allergies -->
+                    <div class="col-md-3 ps-4 border-start">
+                        <h6 class="fw-bold">Basic Info</h6><br>
+                        <p>Name: <span id="vpName"></span></p>
+                        <p>Age: <span id="vpAge"></span></p>
+                        <p>Weight: <span id="vpWeight"></span></p>
+                        <p>Height: <span id="vpHeight"></span></p>
+                        <hr>
+                        <h6 class="fw-bold">Vitals</h6><br>
+                        <p>Heart Rate: <span id="vpHeartRate"></span></p>
+                        <p>Blood Pressure: <span id="vpBloodPressure"></span></p>
+                        <p>Oxygen Saturation: <span id="vpOxygen"></span></p>
+                        <p>Respiration: <span id="vpRespiration"></span></p>
+                        <p>Temperature: <span id="vpTemperature"></span></p>
+                        <p>Blood Glucose: <span id="vpBloodGlucose"></span></p>
+                        <hr>
+                        <h6 class="fw-bold">Allergies</h6><br>
+                        <p>Allergies: <span id="vpAllergies"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button
+                        id="createAssessmentBtn"
+                        type="button"
+                        class="btn btn-sm btn-outline-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addAssessmentModal">
+                    Create New Assessment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Patient Modal -->
+<div class="modal fade" id="editPatientModal" tabindex="-1" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editPatientForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPatientModalLabel">Edit Patient</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Name</label>
+                        <input type="text" id="editName" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDob" class="form-label">DOB</label>
+                        <input type="date" id="editDob" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAddress" class="form-label">Address</label>
+                        <input type="text" id="editAddress" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editContact" class="form-label">Contact</label>
+                        <input type="text" id="editContact" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Patient Modal -->
+<div class="modal fade" id="deletePatientModal" tabindex="-1" aria-labelledby="deletePatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deletePatientModalLabel">
+                    Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this patient record? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelDeleteBtn" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Add Assessment Modal with Tabs -->
+<div class="modal fade" id="addAssessmentModal" tabindex="-1" aria-labelledby="addAssessmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width:60vw;">
+        <div class="modal-content">
+            <form id="addAssessmentForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAssessmentModalLabel">New Patient Assessment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs" id="assessmentTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="vitals-tab" data-bs-toggle="tab"
+                                    data-bs-target="#vitals" type="button" role="tab"
+                                    aria-controls="vitals" aria-selected="true">
+                                Vitals
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="details-tab" data-bs-toggle="tab"
+                                    data-bs-target="#details" type="button" role="tab"
+                                    aria-controls="details" aria-selected="false">
+                                Assessment Details
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="allergies-tab" data-bs-toggle="tab"
+                                    data-bs-target="#allergies" type="button" role="tab"
+                                    aria-controls="allergies" aria-selected="false">
+                                Allergies
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-3">
+                        <!-- Vitals -->
+                        <div class="tab-pane fade show active" id="vitals" role="tabpanel" aria-labelledby="vitals-tab">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Weight</label>
+                                    <input type="text" id="assessWeight" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Height</label>
+                                    <input type="text" id="assessHeight" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Heart Rate</label>
+                                    <input type="text" id="assessHeartRate" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Blood Pressure</label>
+                                    <input type="text" id="assessBloodPressure" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Oxygen Saturation</label>
+                                    <input type="text" id="assessOxygenSat" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Respiration</label>
+                                    <input type="text" id="assessRespiration" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Temperature</label>
+                                    <input type="text" id="assessTemperature" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Blood Glucose</label>
+                                    <input type="text" id="assessBloodGlucose" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Assessment Details -->
+                        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+                            <div class="mb-3">
+                                <label class="form-label">Chief Complaint</label>
+                                <input type="text" id="assessmentComplaint" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Medical History</label>
+                                <textarea id="assessmentHistory" class="form-control" rows="1" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prescription Medications</label>
+                                <textarea id="assessmentMedications" class="form-control" rows="1"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Doctor's Notes</label>
+                                <textarea id="assessmentNotes" class="form-control" rows="1" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Diagnosis</label>
+                                <textarea id="assessmentDiagnosis" class="form-control" rows="1"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Treatment Plan</label>
+                                <textarea id="assessmentPlan" class="form-control" rows="1"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Allergies -->
+                        <div class="tab-pane fade" id="allergies" role="tabpanel" aria-labelledby="allergies-tab">
+                            <div class="mb-3">
+                                <label class="form-label">Allergies</label>
+                                <textarea id="assessmentAllergies" class="form-control" rows="1"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="me-auto d-flex align-items-center">
+                        <label for="assessmentDate" class="form-label mb-0 me-2">Date of Visit:</label>
+                        <input type="date" id="assessmentDate" class="form-control" style="width:auto;" required />
+                    </div>
+                    <button type="button" id="cancelAssessmentBtn" class="btn btn-danger">Go Back</button>
+                    <button type="submit" class="btn btn-success">Save Assessment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS & Script -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="JS/patients.js"></script>
+<script>
+    // Cancel now returns to View Patient modal
+    document.getElementById('cancelAssessmentBtn').addEventListener('click', () => {
+      const addModalEl  = document.getElementById('addAssessmentModal');
+      const viewModalEl = document.getElementById('viewPatientModal');
+      bootstrap.Modal.getInstance(addModalEl).hide();
+      bootstrap.Modal.getOrCreateInstance(viewModalEl).show();
+    });
+</script>
+</body>
+</html>

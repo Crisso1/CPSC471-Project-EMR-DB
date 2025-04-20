@@ -1,0 +1,153 @@
+/* File: CSS/patients.css */
+
+/* === Shared Background + Font === */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: url("../IMG/BG5.png") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* === Top‑Left Icon Buttons === */
+.top-icons {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    gap: 1rem;
+    z-index: 1000;
+}
+.icon-btn {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    color: #3e4044;
+    font-size: 1.25rem;
+    transition: background .3s;
+}
+.icon-btn:hover {
+    background: rgba(255,255,255,1);
+}
+
+/* === Card Panel === */
+.card-panel {
+    background: rgba(131, 183, 233, 0.2);
+    border: 3px solid #013e77;
+    padding: 3rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 1400px;
+    text-align: center;
+}
+.card-panel h2 {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    background: rgb(251, 251, 255);
+    border: 2px solid #013e77;
+    padding: 1rem 3rem;
+    border-radius: 0.75rem;
+    color: #63a4ff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* === Search Bar Styling === */
+.card-panel .form-control {
+    width: 55%;            /* spans 80% of panel width */
+    max-width: 900px;      /* caps at 900px */
+    display: block;
+    margin: 0 auto 1rem; /* center horizontally */
+    font-size: 1.15rem;
+    padding: 0.2rem 0.8rem;
+    border-radius: .705rem;
+    border: 1px solid #ccc;
+    transition: box-shadow .2s ease-in-out, border-color .2s ease-in-out;
+}
+.card-panel .form-control::placeholder {
+    color: #888;
+    opacity: 0.9;
+}
+.card-panel .form-control:focus {
+    border-color: #1677ff;
+    box-shadow: 0 0 0 0.2rem rgba(22,119,255,0.25);
+    outline: none;
+}
+
+/* === Patient Table Styles === */
+.table thead th {
+    vertical-align: middle;
+    font-weight: 600;
+    background-color: #cbe1ff;
+    color: #000;
+}
+.table td,
+.table th {
+    padding: 0.75rem;
+}
+.table tbody tr:hover {
+    background-color: #f4f4f4;
+    transition: background-color .2s ease;
+}
+
+/* === Edit Button Override === */
+.btn-outline-info {
+    color: #595b5e !important;
+    border-color: #595b5e !important;
+}
+.btn-outline-info:hover {
+    background-color: rgba(103, 111, 118, 0.855) !important;
+    color: #ffffff !important;
+    border-color: #595b5e !important;
+}
+
+/* === Add Patient Button === */
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* === Delete Button Hover === */
+.btn-outline-danger:hover {
+    background-color: rgba(255, 18, 42, 0.861) !important;
+}
+
+/* === View Button Override === */
+.btn-outline-secondary {
+    color: #3798ff !important;         /* darker grey text */
+    border-color: #3798ff !important;  /* matching border */
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: rgba(57, 147, 237, 0.855) !important;  /* light grey hover */
+    color: #ffffff !important;                              /* darker on hover */
+    border-color: #3798ff !important;
+  }
+
+  /* Custom Modal Footer Buttons */
+.modal-footer .btn-secondary {
+    background-color: #666666;
+    border-color: #666666;
+    color: rgb #ffffff;
+  }
+
+  .modal-footer .btn-outline-success {
+    background-color: #007d0dbd;
+    color: #ffffff;
+    border-color: #007d0dbd;
+  }
+
