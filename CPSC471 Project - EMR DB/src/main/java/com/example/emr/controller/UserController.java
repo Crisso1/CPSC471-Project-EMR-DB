@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:63343")
+@CrossOrigin(origins = "*")
 @RestController             // Indicates that this class is a REST controller
 @RequestMapping("/api/users") // Base path for endpoints in this controller
 public class UserController {
