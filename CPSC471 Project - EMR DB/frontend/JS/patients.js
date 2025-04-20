@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
       // Delete
       if (e.target.matches(".btn-outline-danger")) {
-        if (!confirm(`Delete patient ${id}?`)) return;
+        if (!confirm(`Are you sure you want to delete this patient?`)) return;
         row.remove();
         delete assessmentsMap[id];
         fetch(`/api/patients/${id}`, { method:"DELETE" }).catch(console.error);

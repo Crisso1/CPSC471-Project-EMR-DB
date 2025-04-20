@@ -157,7 +157,7 @@
     </div>
 </div>
 
-<!-- Add Assessment Modal with Tabs (no Name/Age in Vitals) -->
+<!-- Add Assessment Modal with Tabs -->
 <div class="modal fade" id="addAssessmentModal" tabindex="-1" aria-labelledby="addAssessmentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width:60vw;">
         <div class="modal-content">
@@ -166,27 +166,35 @@
                     <h5 class="modal-title" id="addAssessmentModalLabel">New Patient Assessment</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
-                    <!-- Nav tabs -->
+                    <!-- Tabs -->
                     <ul class="nav nav-tabs" id="assessmentTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="vitals-tab" data-bs-toggle="tab" data-bs-target="#vitals" type="button" role="tab" aria-controls="vitals" aria-selected="true">
+                            <button class="nav-link active" id="vitals-tab" data-bs-toggle="tab"
+                                    data-bs-target="#vitals" type="button" role="tab"
+                                    aria-controls="vitals" aria-selected="true">
                                 Vitals
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">
+                            <button class="nav-link" id="details-tab" data-bs-toggle="tab"
+                                    data-bs-target="#details" type="button" role="tab"
+                                    aria-controls="details" aria-selected="false">
                                 Assessment Details
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="allergies-tab" data-bs-toggle="tab" data-bs-target="#allergies" type="button" role="tab" aria-controls="allergies" aria-selected="false">
+                            <button class="nav-link" id="allergies-tab" data-bs-toggle="tab"
+                                    data-bs-target="#allergies" type="button" role="tab"
+                                    aria-controls="allergies" aria-selected="false">
                                 Allergies
                             </button>
                         </li>
                     </ul>
+
                     <div class="tab-content pt-3">
-                        <!-- Vitals Pane -->
+                        <!-- Vitals -->
                         <div class="tab-pane fade show active" id="vitals" role="tabpanel" aria-labelledby="vitals-tab">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -224,7 +232,7 @@
                             </div>
                         </div>
 
-                        <!-- Assessment Details Pane -->
+                        <!-- Assessment Details -->
                         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
                             <div class="mb-3">
                                 <label class="form-label">Chief Complaint</label>
@@ -252,7 +260,7 @@
                             </div>
                         </div>
 
-                        <!-- Allergies Pane -->
+                        <!-- Allergies -->
                         <div class="tab-pane fade" id="allergies" role="tabpanel" aria-labelledby="allergies-tab">
                             <div class="mb-3">
                                 <label class="form-label">Allergies</label>
@@ -265,39 +273,27 @@
                 <div class="modal-footer">
                     <div class="me-auto d-flex align-items-center">
                         <label for="assessmentDate" class="form-label mb-0 me-2">Date of Visit:</label>
-                        <input
-                                type="date"
-                                id="assessmentDate"
-                                class="form-control"
-                                style="width:auto;"
-                                required
-                        />
+                        <input type="date" id="assessmentDate" class="form-control" style="width:auto;" required />
                     </div>
-                    <!-- Updated button: red and renamed -->
-                    <button
-                            type="button"
-                            id="cancelAssessmentBtn"
-                            class="btn btn-danger"
-                    >
-                        Go Back
-                    </button>
+                    <button type="button" id="cancelAssessmentBtn" class="btn btn-danger">Go Back</button>
                     <button type="submit" class="btn btn-success">Save Assessment</button>
                 </div>
-
             </form>
+        </div>
+    </div>
+</div>
 
-                <!-- Bootstrap JS & Your Script -->
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-                <script src="JS/patients.js"></script>
-                <script>
-                    // Cancel now returns to View Patient modal
-                    document.getElementById('cancelAssessmentBtn').addEventListener('click', () => {
-                      const addModalEl  = document.getElementById('addAssessmentModal');
-                      const viewModalEl = document.getElementById('viewPatientModal');
-                      bootstrap.Modal.getInstance(addModalEl).hide();
-                      bootstrap.Modal.getOrCreateInstance(viewModalEl).show();
-                    });
-                </script>
-
+<!-- Bootstrap JS & Script -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="JS/patients.js"></script>
+<script>
+    // Cancel now returns to View Patient modal
+    document.getElementById('cancelAssessmentBtn').addEventListener('click', () => {
+      const addModalEl  = document.getElementById('addAssessmentModal');
+      const viewModalEl = document.getElementById('viewPatientModal');
+      bootstrap.Modal.getInstance(addModalEl).hide();
+      bootstrap.Modal.getOrCreateInstance(viewModalEl).show();
+    });
+</script>
 </body>
 </html>
