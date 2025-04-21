@@ -36,7 +36,7 @@
                 <table class="table table-bordered table-striped table-hover text-center align-middle bg-white">
                     <thead class="table-primary">
                     <tr>
-                        <th>ID</th><th>Name</th><th>DOB</th><th>Address</th><th>Contact</th><th>Actions</th>
+                        <th>ID</th><th>FName</th><th>LName</th><th>DOB</th><th>Address</th><th>Contact</th><th>Actions</th>
                     </tr>
                     </thead>
                     <tbody id="patientsTable">
@@ -71,8 +71,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="addName" class="form-label">Name</label>
-                        <input type="text" id="addName" class="form-control" required />
+                        <label for="addFName" class="form-label">First Name</label>
+                        <input type="text" id="addFName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addLName" class="form-label">Last Name</label>
+                        <input type="text" id="addLName" class="form-control" required />
                     </div>
                     <div class="mb-3">
                         <label for="addDob" class="form-label">DOB</label>
@@ -124,7 +128,8 @@
                     <!-- Right: Basic Info, Vitals, Allergies -->
                     <div class="col-md-3 ps-4 border-start">
                         <h6 class="fw-bold">Basic Info</h6><br>
-                        <p>Name: <span id="vpName"></span></p>
+                        <p>FName: <span id="vpFName"></span></p>
+                        <p>LName: <span id="vpLName"></span></p>
                         <p>Age: <span id="vpAge"></span></p>
                         <p>Weight: <span id="vpWeight"></span></p>
                         <p>Height: <span id="vpHeight"></span></p>
@@ -168,8 +173,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="editName" class="form-label">Name</label>
-                        <input type="text" id="editName" class="form-control" />
+                        <label for="editFName" class="form-label">First Name</label>
+                        <input type="text" id="editFName" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLName" class="form-label">Last Name</label>
+                        <input type="text" id="editLName" class="form-control" />
                     </div>
                     <div class="mb-3">
                         <label for="editDob" class="form-label">DOB</label>
