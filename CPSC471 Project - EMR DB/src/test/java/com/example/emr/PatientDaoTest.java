@@ -1,6 +1,7 @@
 // src/test/java/com/example/emr/dao/PatientDaoTest.java
-package com.example.emr.dao;
+package com.example.emr;
 
+import com.example.emr.dao.PatientDao;
 import com.example.emr.model.Patient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,18 @@ public class PatientDaoTest {
         List<Patient> all = patientDao.getAllPatients();
         assertNotNull(all, "The list of all patients should not be null");
         assertTrue(all.size() >= 1, "There should be at least one patient record");
+    }
+
+    @Test
+    void testDeletePatient() {
+        int startSize = (patientDao.getAllPatients() == null) ? 0 : patientDao.getAllPatients().size();
+
+        int rows = patientDao.addPatient(samplePatient());
+        assertEquals(1, rows, "Expected one row to be inserted");
+        rows = patientDao.deletePatientBySsn(samplePatient().getSsn());
+        assertEquals(1, rows, "Expected one row to be deleted");
+        int endSize = (patientDao.getAllPatients() == null) ? 0 : patientDao.getAllPatients().size();
+
+        assertEquals(endSize, startSize, "There should be the same number of patients now as we started with.");
     }
 }

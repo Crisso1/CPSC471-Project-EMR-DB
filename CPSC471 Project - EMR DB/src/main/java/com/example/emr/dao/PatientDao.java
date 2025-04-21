@@ -29,6 +29,15 @@ public class PatientDao {
     }
 
     /**
+     * Deletes a patient from the database by SSN.
+     * Returns the number of rows affected (should be 1 if successful, 0 if no patient found).
+     */
+    public int deletePatientBySsn(int ssn) {
+        String sql = "DELETE FROM Patient WHERE Ssn = ?";
+        return jdbcTemplate.update(sql, ssn);
+    }
+
+    /**
      * Retrieves a patient by SSN.
      * Returns the Patient object if found, otherwise null.
      */

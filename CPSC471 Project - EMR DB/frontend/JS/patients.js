@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modals
   const viewModal      = new bootstrap.Modal(document.getElementById("viewPatientModal"));
   const addAssessModal = new bootstrap.Modal(document.getElementById("addAssessmentModal"));
+  const addModal       = new bootstrap.Modal(document.getElementById("addPatientModal"))
   const editModal      = new bootstrap.Modal(document.getElementById("editPatientModal"));
   const deleteModal    = new bootstrap.Modal(document.getElementById("deletePatientModal"));
 
@@ -31,6 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const detailDiagnosis   = document.getElementById("detailDiagnosis");
   const detailPlan        = document.getElementById("detailPlan");
   const detailMedications = document.getElementById("detailMedications");
+
+  // Add-modal fields
+  const addPatientForm  = document.getElementById("addPatientForm");
+  const addFName        = document.getElementById("addFName");
+  const addLName        = document.getElementById("addLName");
+  const addDob          = document.getElementById("addDob");
+  const addAddress      = document.getElementById("addAddress");
+  const addContact      = document.getElementById("addContact");
 
   // Edit‑modal fields
   const editForm       = document.getElementById("editPatientForm");
@@ -84,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Fetch patients or fallback
-  fetch("/api/patients")
+  fetch("http://localhost:8080/api/patients")
     .then(res => res.json())
     .then(renderTable)
     .catch(() => renderTable([
@@ -163,9 +172,46 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       viewModal.show();
-      return;
     }
   });
+
+  // Handle Add Patient Form Submission
+  addPatientForm.addEventListener("submit", e => {
+    e.preventDefault();
+
+    // Collect values from the form
+    const newPatient = {
+      FName: addFName.value.trim(),
+      LName: addLName.value.trim(),
+      dob: addDob.value,
+      address: addAddress.value.trim(),
+      contact: addContact.value.trim()
+    };
+
+    // POST to backend API
+    fetch("http://localhost:8080/api/patients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPatient)
+    })
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to add patient");
+          return res.json();
+        })
+        .then(addedPatient => {
+          // Render the new patient row
+          renderTableRow(addedPatient);
+
+          // Reset form and close modal
+          addPatientForm.reset();
+          addModal.hide();
+        })
+        .catch(err => {
+          console.error(err);
+          alert("There was an error adding the patient.");
+        });
+  });
+
 
   // Confirm delete in modal
   confirmDeleteBtn.addEventListener("click", () => {
@@ -174,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentDeleteRow.remove();
     delete assessmentsMap[pid];
     deleteModal.hide();
-    fetch(`/api/patients/${pid}`, { method: "DELETE" }).catch(console.error);
+    fetch(`http://localhost:8080/api/patients/${pid}`, { method: "DELETE" }).catch(console.error);
     currentDeleteRow = null;
   });
 
@@ -204,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cells[5].textContent = newContact;
 
     editModal.hide();
-    fetch(`/api/patients/${pid}`, {
+    fetch(`http://localhost:8080/api/patients/${pid}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id:+pid, fname:newFName, lname:newLName, dob:newDob, address:newAddr, contact:newContact })

@@ -1,6 +1,10 @@
 // src/test/java/com/example/emr/dao/VitalSignsDaoTest.java
-package com.example.emr.dao;
+package com.example.emr;
 
+import com.example.emr.dao.DoctorDao;
+import com.example.emr.dao.EncounterDao;
+import com.example.emr.dao.PatientDao;
+import com.example.emr.dao.VitalSignsDao;
 import com.example.emr.model.Encounter;
 import com.example.emr.model.Doctor;
 import com.example.emr.model.Patient;

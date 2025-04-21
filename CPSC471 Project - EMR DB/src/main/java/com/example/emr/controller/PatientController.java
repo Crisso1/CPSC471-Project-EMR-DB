@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {
@@ -32,6 +33,17 @@ public class PatientController {
         Patient patient = patientDao.getPatientBySsn(ssn);
         if (patient != null) {
             return ResponseEntity.ok(patient);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{ssn}")
+    public ResponseEntity<List<Patient>> deletePatientsBySsn(@PathVariable int ssn) {
+        Patient patient = patientDao.getPatientBySsn(ssn);
+        if (patient != null) {
+            patientDao.deletePatientBySsn(ssn);
+            return ResponseEntity.ok(patientDao.getAllPatients());
         } else {
             return ResponseEntity.notFound().build();
         }

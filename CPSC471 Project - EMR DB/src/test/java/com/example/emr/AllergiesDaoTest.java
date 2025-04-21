@@ -1,6 +1,7 @@
 // src/test/java/com/example/emr/dao/AllergyDaoTest.java
-package com.example.emr.dao;
+package com.example.emr;
 
+import com.example.emr.dao.AllergiesDao;
 import com.example.emr.model.Allergies;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
