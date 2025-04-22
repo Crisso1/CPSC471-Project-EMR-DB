@@ -1,7 +1,7 @@
 package com.example.emr.model;
 
 public class Allergies {
-    private int patientSsn;
+    private Long patientId;
     private String allergen;
     private String reaction;
     private String severity;
@@ -9,16 +9,25 @@ public class Allergies {
     public Allergies() {
     }
 
-    public int getPatientSsn() {
-        return patientSsn;
+    public Allergies(Long patientId, String allergen, String reaction, String severity) {
+        this.patientId = patientId;
+        this.allergen = allergen;
+        this.reaction = reaction;
+        this.severity = severity;
     }
-    public void setPatientSsn(int patientSsn) {
-        this.patientSsn = patientSsn;
+
+    public Long getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(Long patientId) {
+        this.patientId = patientId;
     }
 
     public String getAllergen() {
         return allergen;
     }
+
     public void setAllergen(String allergen) {
         this.allergen = allergen;
     }
@@ -26,6 +35,7 @@ public class Allergies {
     public String getReaction() {
         return reaction;
     }
+
     public void setReaction(String reaction) {
         this.reaction = reaction;
     }
@@ -33,6 +43,7 @@ public class Allergies {
     public String getSeverity() {
         return severity;
     }
+
     public void setSeverity(String severity) {
         this.severity = severity;
     }

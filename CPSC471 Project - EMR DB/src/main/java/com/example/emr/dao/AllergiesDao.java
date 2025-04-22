@@ -1,4 +1,3 @@
-// src/main/java/com/example/emr/dao/AllergyDao.java
 package com.example.emr.dao;
 
 import com.example.emr.model.Allergies;
@@ -16,12 +15,12 @@ public class AllergiesDao {
     /** Inserts a new allergy record */
     public int addAllergy(Allergies a) {
         String sql = """
-            INSERT INTO Allergy
-              (patient_ssn, allergen, reaction, severity)
+            INSERT INTO allergy
+              (patient_id, allergen, reaction, severity)
             VALUES (?, ?, ?, ?)
             """;
         return jdbcTemplate.update(sql,
-                a.getPatientSsn(),
+                a.getPatientId(),
                 a.getAllergen(),
                 a.getReaction(),
                 a.getSeverity()
@@ -29,11 +28,11 @@ public class AllergiesDao {
     }
 
     /** Retrieves all allergies for a given patient */
-    public List<Allergies> getAllergiesByPatient(int patientSsn) {
-        String sql = "SELECT * FROM Allergy WHERE patient_ssn = ?";
-        return jdbcTemplate.query(sql, new Object[]{patientSsn}, (rs, rn) -> {
+    public List<Allergies> getAllergiesByPatientId(long patientId) {
+        String sql = "SELECT * FROM allergy WHERE patient_id = ?";
+        return jdbcTemplate.query(sql, new Object[]{patientId}, (rs, rn) -> {
             Allergies a = new Allergies();
-            a.setPatientSsn(rs.getInt("patient_ssn"));
+            a.setPatientId(rs.getLong("patient_id"));
             a.setAllergen(rs.getString("allergen"));
             a.setReaction(rs.getString("reaction"));
             a.setSeverity(rs.getString("severity"));
@@ -43,10 +42,10 @@ public class AllergiesDao {
 
     /** Retrieves all allergies in the system */
     public List<Allergies> getAllAllergies() {
-        String sql = "SELECT * FROM Allergy";
+        String sql = "SELECT * FROM allergy";
         return jdbcTemplate.query(sql, (rs, rn) -> {
             Allergies a = new Allergies();
-            a.setPatientSsn(rs.getInt("patient_ssn"));
+            a.setPatientId(rs.getLong("patient_id"));
             a.setAllergen(rs.getString("allergen"));
             a.setReaction(rs.getString("reaction"));
             a.setSeverity(rs.getString("severity"));

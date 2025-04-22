@@ -37,9 +37,9 @@ public class EncounterController {
     }
 
     /** List all encounters for a given patient */
-    @GetMapping("/patient/{ssn}")
-    public ResponseEntity<List<Encounter>> getByPatient(@PathVariable("ssn") int patientSsn) {
-        List<Encounter> list = encounterDao.getEncountersByPatient(patientSsn);
+    @GetMapping("/patients/{id}")
+    public ResponseEntity<List<Encounter>> getByPatient(@PathVariable("id") int id) {
+        List<Encounter> list = encounterDao.getEncountersByPatientId(id);
         return ResponseEntity.ok(list);
     }
 

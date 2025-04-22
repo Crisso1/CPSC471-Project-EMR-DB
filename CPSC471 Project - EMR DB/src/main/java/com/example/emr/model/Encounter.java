@@ -1,12 +1,13 @@
 package com.example.emr.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Encounter {
-    private int encounterId;
-    private int patientSsn;
+    private Long encounterId;
+    private Long patientId;
     private int doctorSsn;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -24,39 +25,94 @@ public class Encounter {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate followUpDate;
 
-    public Encounter() { }
+    public Encounter() {}
 
-    // Getters & setters
-    public int getEncounterId() { return encounterId; }
-    public void setEncounterId(int encounterId) { this.encounterId = encounterId; }
+    // === Getters & Setters ===
+    public Long getEncounterId() {
+        return encounterId;
+    }
 
-    public int getPatientSsn() { return patientSsn; }
-    public void setPatientSsn(int patientSsn) { this.patientSsn = patientSsn; }
+    public void setEncounterId(Long encounterId) {
+        this.encounterId = encounterId;
+    }
 
-    public int getDoctorSsn() { return doctorSsn; }
-    public void setDoctorSsn(int doctorSsn) { this.doctorSsn = doctorSsn; }
+    public Long getPatientId() {
+        return patientId;
+    }
 
-    public LocalDate getVisitDate() { return visitDate; }
-    public void setVisitDate(LocalDate visitDate) { this.visitDate = visitDate; }
+    public void setPatientId(Long patientId) {
+        this.patientId = patientId;
+    }
 
-    public LocalTime getVisitTime() { return visitTime; }
-    public void setVisitTime(LocalTime visitTime) { this.visitTime = visitTime; }
+    public int getDoctorSsn() {
+        return doctorSsn;
+    }
 
-    public String getVisitType() { return visitType; }
-    public void setVisitType(String visitType) { this.visitType = visitType; }
+    public void setDoctorSsn(int doctorSsn) {
+        this.doctorSsn = doctorSsn;
+    }
 
-    public String getChiefComplaint() { return chiefComplaint; }
-    public void setChiefComplaint(String chiefComplaint) { this.chiefComplaint = chiefComplaint; }
+    public LocalDate getVisitDate() {
+        return visitDate;
+    }
 
-    public String getDiagnosis() { return diagnosis; }
-    public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }
+    public void setVisitDate(LocalDate visitDate) {
+        this.visitDate = visitDate;
+    }
 
-    public String getTreatmentPlan() { return treatmentPlan; }
-    public void setTreatmentPlan(String treatmentPlan) { this.treatmentPlan = treatmentPlan; }
+    public LocalTime getVisitTime() {
+        return visitTime;
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public void setVisitTime(LocalTime visitTime) {
+        this.visitTime = visitTime;
+    }
 
-    public LocalDate getFollowUpDate() { return followUpDate; }
-    public void setFollowUpDate(LocalDate followUpDate) { this.followUpDate = followUpDate; }
+    public String getVisitType() {
+        return visitType;
+    }
+
+    public void setVisitType(String visitType) {
+        this.visitType = visitType;
+    }
+
+    public String getChiefComplaint() {
+        return chiefComplaint;
+    }
+
+    public void setChiefComplaint(String chiefComplaint) {
+        this.chiefComplaint = chiefComplaint;
+    }
+
+    public String getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(String diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
+    public String getTreatmentPlan() {
+        return treatmentPlan;
+    }
+
+    public void setTreatmentPlan(String treatmentPlan) {
+        this.treatmentPlan = treatmentPlan;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public LocalDate getFollowUpDate() {
+        return followUpDate;
+    }
+
+    public void setFollowUpDate(LocalDate followUpDate) {
+        this.followUpDate = followUpDate;
+    }
 }

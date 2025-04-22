@@ -181,8 +181,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Collect values from the form
     const newPatient = {
-      FName: addFName.value.trim(),
-      LName: addLName.value.trim(),
+      fname: addFName.value.trim(),
+      lname: addLName.value.trim(),
       dob: addDob.value,
       address: addAddress.value.trim(),
       contact: addContact.value.trim()

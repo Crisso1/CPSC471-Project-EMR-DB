@@ -16,14 +16,13 @@ CREATE TABLE Certifications (
 );
 
 -- Create the Patient table
-CREATE TABLE Patient (
-                         Ssn INT NOT NULL,
-                         FName VARCHAR(15) NOT NULL,
-                         LName VARCHAR(15) NOT NULL,
-                         Age INT,
-                         Weight_kg DECIMAL(5,2),
-                         Height_cm DECIMAL(5,2),
-                         PRIMARY KEY (Ssn)
+CREATE TABLE patients (
+                          id SERIAL PRIMARY KEY,
+                          fname VARCHAR(255) NOT NULL,
+                          lname VARCHAR(255) NOT NULL,
+                          dob DATE,
+                          address TEXT,
+                          contact VARCHAR(255)
 );
 
 -- Create the MedicalRecord table

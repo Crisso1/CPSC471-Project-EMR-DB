@@ -4,6 +4,7 @@ import com.example.emr.model.Encounter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
@@ -17,14 +18,14 @@ public class EncounterDao {
     /** Inserts a new encounter */
     public int addEncounter(Encounter e) {
         String sql = """
-            INSERT INTO Encounter
-              (patient_ssn, doctor_ssn, visit_date, visit_time,
+            INSERT INTO encounter
+              (patient_id, doctor_ssn, visit_date, visit_time,
                visit_type, chief_complaint, diagnosis,
                treatment_plan, notes, follow_up_date)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
         return jdbcTemplate.update(sql,
-                e.getPatientSsn(),
+                e.getPatientId(),
                 e.getDoctorSsn(),
                 Date.valueOf(e.getVisitDate()),
                 e.getVisitTime() != null ? Time.valueOf(e.getVisitTime()) : null,
@@ -38,12 +39,12 @@ public class EncounterDao {
     }
 
     /** Retrieve one encounter by its ID */
-    public Encounter getEncounterById(int id) {
-        String sql = "SELECT * FROM Encounter WHERE encounter_id = ?";
+    public Encounter getEncounterById(long id) {
+        String sql = "SELECT * FROM encounter WHERE encounter.encounter_id = ?";
         List<Encounter> list = jdbcTemplate.query(sql, new Object[]{id}, (rs, rn) -> {
             Encounter en = new Encounter();
-            en.setEncounterId(rs.getInt("encounter_id"));
-            en.setPatientSsn(rs.getInt("patient_ssn"));
+            en.setEncounterId(rs.getLong("encounter_id"));
+            en.setPatientId(rs.getLong("patient_id"));
             en.setDoctorSsn(rs.getInt("doctor_ssn"));
             en.setVisitDate(rs.getDate("visit_date").toLocalDate());
             Time t = rs.getTime("visit_time");
@@ -61,12 +62,12 @@ public class EncounterDao {
     }
 
     /** Retrieve all encounters for a given patient */
-    public List<Encounter> getEncountersByPatient(int patientSsn) {
-        String sql = "SELECT * FROM Encounter WHERE patient_ssn = ?";
-        return jdbcTemplate.query(sql, new Object[]{patientSsn}, (rs, rn) -> {
+    public List<Encounter> getEncountersByPatientId(long patientId) {
+        String sql = "SELECT * FROM encounter WHERE patient_id = ?";
+        return jdbcTemplate.query(sql, new Object[]{patientId}, (rs, rn) -> {
             Encounter en = new Encounter();
-            en.setEncounterId(rs.getInt("encounter_id"));
-            en.setPatientSsn(rs.getInt("patient_ssn"));
+            en.setEncounterId(rs.getLong("encounter_id"));
+            en.setPatientId(rs.getLong("patient_id"));
             en.setDoctorSsn(rs.getInt("doctor_ssn"));
             en.setVisitDate(rs.getDate("visit_date").toLocalDate());
             Time t = rs.getTime("visit_time");
@@ -84,11 +85,11 @@ public class EncounterDao {
 
     /** Retrieve all encounters in the system */
     public List<Encounter> getAllEncounters() {
-        String sql = "SELECT * FROM Encounter";
+        String sql = "SELECT * FROM encounter";
         return jdbcTemplate.query(sql, (rs, rn) -> {
             Encounter en = new Encounter();
-            en.setEncounterId(rs.getInt("encounter_id"));
-            en.setPatientSsn(rs.getInt("patient_ssn"));
+            en.setEncounterId(rs.getLong("encounter_id"));
+            en.setPatientId(rs.getLong("patient_id"));
             en.setDoctorSsn(rs.getInt("doctor_ssn"));
             en.setVisitDate(rs.getDate("visit_date").toLocalDate());
             Time t = rs.getTime("visit_time");

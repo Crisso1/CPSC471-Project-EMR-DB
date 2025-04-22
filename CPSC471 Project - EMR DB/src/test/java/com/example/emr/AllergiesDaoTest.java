@@ -1,4 +1,3 @@
-// src/test/java/com/example/emr/dao/AllergyDaoTest.java
 package com.example.emr;
 
 import com.example.emr.dao.AllergiesDao;
@@ -7,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional  // roll back after each test
+@Transactional // Rolls back DB changes after each test
 public class AllergiesDaoTest {
 
     @Autowired
@@ -19,7 +20,7 @@ public class AllergiesDaoTest {
 
     private Allergies sampleAllergy() {
         Allergies a = new Allergies();
-        a.setPatientSsn(111222333);
+        a.setPatientId(1L); // Assumes patient with ID 1 exists in test DB
         a.setAllergen("Peanuts");
         a.setReaction("Hives");
         a.setSeverity("Severe");
@@ -28,16 +29,14 @@ public class AllergiesDaoTest {
 
     @Test
     void testAddAndGetAllergy() {
-        // Insert the allergy
         int rows = allergiesDao.addAllergy(sampleAllergy());
         assertEquals(1, rows, "Expected one row to be inserted");
 
-        // Retrieve by patient SSN
-        List<Allergies> list = allergiesDao.getAllergiesByPatient(111222333);
+        List<Allergies> list = allergiesDao.getAllergiesByPatientId(1L);
         assertFalse(list.isEmpty(), "Should find at least one allergy for the patient");
 
         Allergies inserted = list.get(0);
-        assertEquals(111222333, inserted.getPatientSsn());
+        assertEquals(1L, inserted.getPatientId());
         assertEquals("Peanuts", inserted.getAllergen());
         assertEquals("Hives", inserted.getReaction());
         assertEquals("Severe", inserted.getSeverity());
@@ -45,10 +44,8 @@ public class AllergiesDaoTest {
 
     @Test
     void testGetAllAllergies() {
-        // Insert one sample allergy
         allergiesDao.addAllergy(sampleAllergy());
 
-        // Should return a non-null, non-empty list
         List<Allergies> all = allergiesDao.getAllAllergies();
         assertNotNull(all, "The list of all allergies should not be null");
         assertTrue(all.size() >= 1, "There should be at least one allergy in the database");

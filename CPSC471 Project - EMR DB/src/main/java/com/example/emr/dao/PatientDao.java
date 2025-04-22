@@ -4,6 +4,8 @@ import com.example.emr.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -12,68 +14,70 @@ public class PatientDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    /**
-     * Inserts a new patient record into the Patient table.
-     * Returns the number of rows affected.
-     */
-    public int addPatient(Patient patient) {
-        String sql = "INSERT INTO Patient (ssn, FName, LName, Age, Weight_kg, Height_cm) VALUES (?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
-                patient.getSsn(),
-                patient.getFirstName(),
-                patient.getLastName(),
-                patient.getAge(),
-                patient.getWeightKg(),
-                patient.getHeightCm()
-        );
+    public Patient addPatient(Patient patient) {
+        String sql = "INSERT INTO patients (fname, lname, dob, address, contact) VALUES (?, ?, ?, ?, ?) RETURNING *";
+        return jdbcTemplate.queryForObject(sql, new Object[] {
+                patient.getFname(),
+                patient.getLname(),
+                Date.valueOf(patient.getDob()),
+                patient.getAddress(),
+                patient.getContact()
+        }, (rs, rowNum) -> {
+            Patient p = new Patient();
+            p.setId(rs.getLong("id"));
+            p.setFname(rs.getString("fname"));
+            p.setLname(rs.getString("lname"));
+            p.setDob(rs.getDate("dob").toLocalDate());
+            p.setAddress(rs.getString("address"));
+            p.setContact(rs.getString("contact"));
+            return p;
+        });
     }
 
-    /**
-     * Deletes a patient from the database by SSN.
-     * Returns the number of rows affected (should be 1 if successful, 0 if no patient found).
-     */
-    public int deletePatientBySsn(int ssn) {
-        String sql = "DELETE FROM Patient WHERE Ssn = ?";
-        return jdbcTemplate.update(sql, ssn);
+    public int deletePatientById(long id) {
+        String sql = "DELETE FROM patients WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
-    /**
-     * Retrieves a patient by SSN.
-     * Returns the Patient object if found, otherwise null.
-     */
-    public Patient getPatientBySsn(int ssn) {
-        String sql = "SELECT * FROM Patient WHERE Ssn = ?";
-        List<Patient> list = jdbcTemplate.query(
-                sql,
-                new Object[]{ ssn },
-                (rs, rowNum) -> {
-                    Patient patient = new Patient();
-                    patient.setSsn(rs.getInt("Ssn"));
-                    patient.setFirstName(rs.getString("FName"));
-                    patient.setLastName(rs.getString("LName"));
-                    patient.setAge(rs.getInt("Age"));
-                    patient.setWeightKg(rs.getDouble("Weight_kg"));
-                    patient.setHeightCm(rs.getDouble("Height_cm"));
-                    return patient;
-                }
-        );
+    public Patient getPatientById(long id) {
+        String sql = "SELECT * FROM patients WHERE id = ?";
+        List<Patient> list = jdbcTemplate.query(sql, new Object[]{id}, (rs, rowNum) -> {
+            Patient patient = new Patient();
+            patient.setId(rs.getLong("id"));
+            patient.setFname(rs.getString("fname"));
+            patient.setLname(rs.getString("lname"));
+            patient.setDob(rs.getDate("dob").toLocalDate());
+            patient.setAddress(rs.getString("address"));
+            patient.setContact(rs.getString("contact"));
+            return patient;
+        });
         return list.isEmpty() ? null : list.get(0);
     }
 
-    /**
-     * Retrieves all patient records.
-     */
     public List<Patient> getAllPatients() {
-        String sql = "SELECT * FROM Patient";
+        String sql = "SELECT * FROM patients";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Patient patient = new Patient();
-            patient.setSsn(rs.getInt("Ssn"));
-            patient.setFirstName(rs.getString("FName"));
-            patient.setLastName(rs.getString("LName"));
-            patient.setAge(rs.getInt("Age"));
-            patient.setWeightKg(rs.getDouble("Weight_kg"));
-            patient.setHeightCm(rs.getDouble("Height_cm"));
+            patient.setId(rs.getLong("id"));
+            patient.setFname(rs.getString("fname"));
+            patient.setLname(rs.getString("lname"));
+            patient.setDob(rs.getDate("dob").toLocalDate());
+            patient.setAddress(rs.getString("address"));
+            patient.setContact(rs.getString("contact"));
             return patient;
         });
+    }
+
+    public int updatePatient(Patient patient) {
+        String sql = "UPDATE patients SET fname = ?, lname = ?, dob = ?, address = ?, contact = ? WHERE id = ?";
+        return jdbcTemplate.update(
+                sql,
+                patient.getFname(),
+                patient.getLname(),
+                Date.valueOf(patient.getDob()),
+                patient.getAddress(),
+                patient.getContact(),
+                patient.getId()
+        );
     }
 }

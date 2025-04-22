@@ -28,9 +28,9 @@ public class AllergiesController {
     }
 
     /** List all allergies for a given patient */
-    @GetMapping("/patient/{ssn}")
-    public ResponseEntity<List<Allergies>> getByPatient(@PathVariable("ssn") int ssn) {
-        List<Allergies> list = allergiesDao.getAllergiesByPatient(ssn);
+    @GetMapping("/patients/{id}")
+    public ResponseEntity<List<Allergies>> getByPatient(@PathVariable("id") int id) {
+        List<Allergies> list = allergiesDao.getAllergiesByPatientId(id);
         return ResponseEntity.ok(list);
     }
 
