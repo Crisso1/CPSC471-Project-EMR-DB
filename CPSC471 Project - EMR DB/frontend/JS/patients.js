@@ -7,11 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modals
   const viewModal      = new bootstrap.Modal(document.getElementById("viewPatientModal"));
   const addAssessModal = new bootstrap.Modal(document.getElementById("addAssessmentModal"));
+  const addModal       = new bootstrap.Modal(document.getElementById("addPatientModal"))
   const editModal      = new bootstrap.Modal(document.getElementById("editPatientModal"));
   const deleteModal    = new bootstrap.Modal(document.getElementById("deletePatientModal"));
 
   // View‑modal spans
-  const vpName         = document.getElementById("vpName");
+  const vpFName        = document.getElementById("vpFName");
+  const vpLName        = document.getElementById("vpLName")
   const vpAge          = document.getElementById("vpAge");
   const vpWeight       = document.getElementById("vpWeight");
   const vpHeight       = document.getElementById("vpHeight");
@@ -31,9 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const detailPlan        = document.getElementById("detailPlan");
   const detailMedications = document.getElementById("detailMedications");
 
+  // Add-modal fields
+  const addPatientForm  = document.getElementById("addPatientForm");
+  const addFName        = document.getElementById("addFName");
+  const addLName        = document.getElementById("addLName");
+  const addDob          = document.getElementById("addDob");
+  const addAddress      = document.getElementById("addAddress");
+  const addContact      = document.getElementById("addContact");
+
   // Edit‑modal fields
   const editForm       = document.getElementById("editPatientForm");
-  const editName       = document.getElementById("editName");
+  const editFName      = document.getElementById("editFName");
+  const editLName      = document.getElementById("editLName");
   const editDob        = document.getElementById("editDob");
   const editAddress    = document.getElementById("editAddress");
   const editContact    = document.getElementById("editContact");
@@ -46,7 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const createBtn = document.getElementById("createAssessmentBtn");
   const addLabel  = document.getElementById("addAssessmentModalLabel");
   createBtn.addEventListener("click", () => {
-    addLabel.textContent = `New Assessment – ${vpName.textContent}`;
+    addLabel.textContent = `New Assessment – ${vpFName.textContent}`;
+    addLabel.textContent = `New AssessmentNBSP-NBSP${vpLName.textContent}`;
   });
 
   let currentPatientId = null;
@@ -60,7 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
     tr.dataset.id = p.id;
     tr.innerHTML = `
       <td>${p.id}</td>
-      <td>${p.name}</td>
+      <td>${p.fname}</td>
+      <td>${p.lname}</td>
       <td>${p.dob}</td>
       <td>${p.address}</td>
       <td>${p.contact}</td>
@@ -80,11 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Fetch patients or fallback
-  fetch("/api/patients")
+  fetch("http://localhost:8080/api/patients")
     .then(res => res.json())
     .then(renderTable)
     .catch(() => renderTable([
-      { id:101, name:"FName LName 1", dob:"1999-12-31", address:"471 DBProject Blvd", contact:"(403) 555-2345", assessments:[] }
+      { id:101, fname:"FName", lname:"LName", dob:"1999-12-31", address:"471 DBProject Blvd", contact:"(403) 555-2345", assessments:[] }
       // … more sample …
     ]));
 
@@ -118,10 +131,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // — Edit button → open edit modal
     if (e.target.matches(".btn-outline-info")) {
       currentEditRow = row;
-      editName.value    = cells[1].textContent;
-      editDob.value     = cells[2].textContent;
-      editAddress.value = cells[3].textContent;
-      editContact.value = cells[4].textContent;
+      editFName.value   = cells[1].textContent;
+      editLName.value   = cells[2].textContent;
+      editDob.value     = cells[3].textContent;
+      editAddress.value = cells[4].textContent;
+      editContact.value = cells[5].textContent;
       editModal.show();
       return;
     }
@@ -131,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
       currentPatientId = id;
       // clear all view spans
       [
-        vpName, vpAge, vpWeight, vpHeight,
+        vpFName, vpLName, vpAge, vpWeight, vpHeight,
         vpHeartRate, vpBloodPressure, vpOxygen,
         vpRespiration, vpTemperature, vpBloodGlucose,
         vpAllergies,
@@ -140,9 +154,10 @@ document.addEventListener("DOMContentLoaded", () => {
       ].forEach(el => el.textContent = "");
 
       // basic info
-      vpName.textContent = cells[1].textContent;
+      vpFName.textContent = cells[1].textContent;
+      vpLName.textContent = cells[2].textContent;
       vpAge.textContent  = String(
-        new Date().getFullYear() - new Date(cells[2].textContent).getFullYear()
+        new Date().getFullYear() - new Date(cells[3].textContent).getFullYear()
       );
 
       // list existing assessments
@@ -157,9 +172,46 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       viewModal.show();
-      return;
     }
   });
+
+  // Handle Add Patient Form Submission
+  addPatientForm.addEventListener("submit", e => {
+    e.preventDefault();
+
+    // Collect values from the form
+    const newPatient = {
+      fname: addFName.value.trim(),
+      lname: addLName.value.trim(),
+      dob: addDob.value,
+      address: addAddress.value.trim(),
+      contact: addContact.value.trim()
+    };
+
+    // POST to backend API
+    fetch("http://localhost:8080/api/patients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPatient)
+    })
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to add patient");
+          return res.json();
+        })
+        .then(addedPatient => {
+          // Render the new patient row
+          renderTableRow(addedPatient);
+
+          // Reset form and close modal
+          addPatientForm.reset();
+          addModal.hide();
+        })
+        .catch(err => {
+          console.error(err);
+          alert("There was an error adding the patient.");
+        });
+  });
+
 
   // Confirm delete in modal
   confirmDeleteBtn.addEventListener("click", () => {
@@ -168,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentDeleteRow.remove();
     delete assessmentsMap[pid];
     deleteModal.hide();
-    fetch(`/api/patients/${pid}`, { method: "DELETE" }).catch(console.error);
+    fetch(`http://localhost:8080/api/patients/${pid}`, { method: "DELETE" }).catch(console.error);
     currentDeleteRow = null;
   });
 
@@ -184,22 +236,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!row) return;
     const pid    = row.dataset.id;
     const cells  = row.children;
-    const newName    = editName.value.trim();
+    const newFName   = editFName.value.trim();
+    const newLName   = editLName.value.trim();
     const newDob     = editDob.value;
     const newAddr    = editAddress.value.trim();
     const newContact = editContact.value.trim();
 
     // update table cells
-    cells[1].textContent = newName;
-    cells[2].textContent = newDob;
-    cells[3].textContent = newAddr;
-    cells[4].textContent = newContact;
+    cells[1].textContent = newFName;
+    cells[2].textContent = newLName;
+    cells[3].textContent = newDob;
+    cells[4].textContent = newAddr;
+    cells[5].textContent = newContact;
 
     editModal.hide();
-    fetch(`/api/patients/${pid}`, {
+    fetch(`http://localhost:8080/api/patients/${pid}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id:+pid, name:newName, dob:newDob, address:newAddr, contact:newContact })
+      body: JSON.stringify({ id:+pid, fname:newFName, lname:newLName, dob:newDob, address:newAddr, contact:newContact })
     }).catch(() => alert("Error saving edits."));
   });
 

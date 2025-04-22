@@ -89,8 +89,8 @@ body {
     text-align: center;
     transform-origin: center center;
     /* strong zoom transition */
-    transition: transform 0.15s ease-out !important,
-                box-shadow  0.25s ease-out !important;
+    transition: transform 0.15s ease-out,
+                box-shadow  0.25s ease-out;
   }
   .card:hover {
     transform: scale(1.15) !important;

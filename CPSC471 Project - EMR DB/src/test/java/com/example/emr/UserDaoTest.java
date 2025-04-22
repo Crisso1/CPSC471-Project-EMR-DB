@@ -1,5 +1,6 @@
-package com.example.emr.dao;
+package com.example.emr;
 
+import com.example.emr.dao.UserDao;
 import com.example.emr.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

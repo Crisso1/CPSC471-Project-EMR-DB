@@ -1,51 +1,74 @@
 package com.example.emr.model;
 
-public class Patient {
-    private int ssn;
-    private String firstName;
-    private String lastName;
-    private int age;
-    private double weightKg;
-    private double heightCm;
+import java.time.LocalDate;
 
-    // Default constructor
+public class Patient {
+
+    private Long id;
+    private String fname;
+    private String lname;
+    private LocalDate dob;
+    private String address;
+    private String contact;
+
+    // === Constructors ===
     public Patient() {}
 
-    // Getters and Setters
-    public int getSsn() {
-        return ssn;
+    public Patient(Long id, String fname, String lname, LocalDate dob, String address, String contact) {
+        this.id = id;
+        this.fname = fname;
+        this.lname = lname;
+        this.dob = dob;
+        this.address = address;
+        this.contact = contact;
     }
-    public void setSsn(int ssn) {
-        this.ssn = ssn;
+
+    // === Getters and Setters ===
+    public Long getId() {
+        return id;
     }
-    public String getFirstName() {
-        return firstName;
+
+    public void setId(Long id) {
+        this.id = id;
     }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+
+    public String getFname() {
+        return fname;
     }
-    public String getLastName() {
-        return lastName;
+
+    public void setFname(String fname) {
+        this.fname = fname;
     }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+
+    public String getLname() {
+        return lname;
     }
-    public int getAge() {
-        return age;
+
+    public void setLname(String lname) {
+        this.lname = lname;
     }
-    public void setAge(int age) {
-        this.age = age;
+
+    public LocalDate getDob() {
+        return dob;
     }
-    public double getWeightKg() {
-        return weightKg;
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
-    public void setWeightKg(double weightKg) {
-        this.weightKg = weightKg;
+
+    public String getAddress() {
+        return address;
     }
-    public double getHeightCm() {
-        return heightCm;
+
+    public void setAddress(String address) {
+        this.address = address;
     }
-    public void setHeightCm(double heightCm) {
-        this.heightCm = heightCm;
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 }

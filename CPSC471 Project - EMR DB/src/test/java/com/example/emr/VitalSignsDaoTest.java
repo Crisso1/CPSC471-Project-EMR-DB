@@ -1,6 +1,9 @@
-// src/test/java/com/example/emr/dao/VitalSignsDaoTest.java
-package com.example.emr.dao;
+package com.example.emr;
 
+import com.example.emr.dao.DoctorDao;
+import com.example.emr.dao.EncounterDao;
+import com.example.emr.dao.PatientDao;
+import com.example.emr.dao.VitalSignsDao;
 import com.example.emr.model.Encounter;
 import com.example.emr.model.Doctor;
 import com.example.emr.model.Patient;
@@ -35,16 +38,16 @@ public class VitalSignsDaoTest {
     @Autowired
     private DoctorDao doctorDao;
 
-    private int encounterId;
+    private Long encounterId;
+    private Long patientId;
 
     private Patient samplePatient() {
         Patient p = new Patient();
-        p.setSsn(111222333);
-        p.setFirstName("Alice");
-        p.setLastName("Smith");
-        p.setAge(30);
-        p.setWeightKg(65.5);
-        p.setHeightCm(170.2);
+        p.setFname("Alice");
+        p.setLname("Smith");
+        p.setDob(LocalDate.of(1990, 1, 1));
+        p.setAddress("123 Main St");
+        p.setContact("alice@example.com");
         return p;
     }
 
@@ -59,7 +62,7 @@ public class VitalSignsDaoTest {
 
     private Encounter sampleEncounter() {
         Encounter e = new Encounter();
-        e.setPatientSsn(111222333);
+        e.setPatientId(patientId);
         e.setDoctorSsn(444555666);
         e.setVisitDate(LocalDate.of(2025, 4, 17));
         e.setVisitTime(LocalTime.of(14, 30));
@@ -72,9 +75,9 @@ public class VitalSignsDaoTest {
         return e;
     }
 
-    private VitalSigns sampleVital(int encId) {
+    private VitalSigns sampleVital(Long encId) {
         VitalSigns v = new VitalSigns();
-        v.setEncounterId(encId);
+        v.setEncounterId(Math.toIntExact(encId));
         v.setMeasuredAt(LocalDateTime.of(2025, 4, 17, 9, 0));
         v.setTemperature(37.2);
         v.setBloodPressure("120/80");
@@ -85,24 +88,24 @@ public class VitalSignsDaoTest {
 
     @BeforeEach
     void setupForeignKeysAndEncounter() {
-        // ensure patient and doctor exist
         patientDao.addPatient(samplePatient());
+        List<Patient> patients = patientDao.getAllPatients();
+        patientId = patients.get(patients.size() - 1).getId();
+
         doctorDao.addDoctor(sampleDoctor());
-        // insert encounter and capture its generated ID
+
         encounterDao.addEncounter(sampleEncounter());
-        List<Encounter> encounters = encounterDao.getEncountersByPatient(111222333);
+        List<Encounter> encounters = encounterDao.getEncountersByPatientId(patientId);
         assertFalse(encounters.isEmpty(), "Encounter should have been inserted");
         encounterId = encounters.get(0).getEncounterId();
     }
 
     @Test
     void testAddAndGetByEncounter() {
-        // insert the vital signs record linked to our new encounter
         int rows = vitalSignsDao.addVitalSigns(sampleVital(encounterId));
         assertEquals(1, rows, "Expected one row to be inserted");
 
-        // retrieve by encounter
-        List<VitalSigns> list = vitalSignsDao.getByEncounter(encounterId);
+        List<VitalSigns> list = vitalSignsDao.getByEncounter(Math.toIntExact(encounterId));
         assertFalse(list.isEmpty(), "Should find at least one vital-signs record");
 
         VitalSigns inserted = list.get(0);
@@ -116,10 +119,8 @@ public class VitalSignsDaoTest {
 
     @Test
     void testGetAll() {
-        // insert one sample record
         vitalSignsDao.addVitalSigns(sampleVital(encounterId));
 
-        // should return a non-null, non-empty list
         List<VitalSigns> all = vitalSignsDao.getAll();
         assertNotNull(all, "The list of all vital-signs entries should not be null");
         assertTrue(all.size() >= 1, "There should be at least one entry in the database");

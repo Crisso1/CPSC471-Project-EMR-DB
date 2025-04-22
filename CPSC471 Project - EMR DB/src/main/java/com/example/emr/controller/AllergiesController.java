@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/allergies")
 public class AllergiesController {
@@ -27,9 +28,9 @@ public class AllergiesController {
     }
 
     /** List all allergies for a given patient */
-    @GetMapping("/patient/{ssn}")
-    public ResponseEntity<List<Allergies>> getByPatient(@PathVariable("ssn") int ssn) {
-        List<Allergies> list = allergiesDao.getAllergiesByPatient(ssn);
+    @GetMapping("/patients/{id}")
+    public ResponseEntity<List<Allergies>> getByPatient(@PathVariable("id") int id) {
+        List<Allergies> list = allergiesDao.getAllergiesByPatientId(id);
         return ResponseEntity.ok(list);
     }
 

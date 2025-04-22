@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController                  // Marks the class as a REST controller
 @RequestMapping("/api/doctors")  // Base path for doctor-related endpoints
 public class DoctorController {
