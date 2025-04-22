@@ -1,7 +1,10 @@
 package com.example.emr.controller;
 
 import com.example.emr.dao.PatientDao;
+import com.example.emr.model.Allergies;
+import com.example.emr.model.Encounter;
 import com.example.emr.model.Patient;
+import com.example.emr.model.VitalSigns;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +28,19 @@ public class PatientController {
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
         Patient patient = patientDao.getPatientById(id);
         return (patient != null) ? ResponseEntity.ok(patient) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/summary/{id}")
+    public ResponseEntity<com.example.emr.dto.PatientSummary> getPatientSummary(@PathVariable Long id) {
+        Patient patient = patientDao.getPatientById(id);
+        if (patient == null) return ResponseEntity.notFound().build();
+
+        List<VitalSigns> vitals = vitalSignsDao.getByPatientId(id);
+        List<Allergies> allergies = allergiesDao.getAllergiesByPatient(id);
+        List<Encounter> encounters = encounterDao.getEncountersByPatientId(id);
+
+        com.example.emr.dto.PatientSummary summary = new com.example.emr.dto.PatientSummary(patient, vitals, allergies, encounters);
+        return ResponseEntity.ok(summary);
     }
 
     @PostMapping

@@ -17,17 +17,24 @@ public class VitalSignsDao {
     /** Inserts a new vital signs record */
     public int addVitalSigns(VitalSigns v) {
         String sql = """
-            INSERT INTO VitalSigns
-              (encounter_id, measured_at, temperature, blood_pressure, heart_rate, respiratory_rate)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """;
+    INSERT INTO vitalsigns
+      (encounter_id, measured_at, temperature, blood_pressure,
+       heart_rate, respiratory_rate, weight, height,
+       oxygen_saturation, blood_glucose)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+""";
+
         return jdbcTemplate.update(sql,
                 v.getEncounterId(),
                 Timestamp.valueOf(v.getMeasuredAt()),
                 v.getTemperature(),
                 v.getBloodPressure(),
                 v.getHeartRate(),
-                v.getRespiratoryRate()
+                v.getRespiratoryRate(),
+                v.getWeight(),
+                v.getHeight(),
+                v.getOxygenSaturation(),
+                v.getBloodGlucose()
         );
     }
 
@@ -42,6 +49,10 @@ public class VitalSignsDao {
             v.setBloodPressure(rs.getString("blood_pressure"));
             v.setHeartRate(rs.getInt("heart_rate"));
             v.setRespiratoryRate(rs.getInt("respiratory_rate"));
+            v.setWeight(rs.getDouble("weight"));
+            v.setHeight(rs.getDouble("height"));
+            v.setOxygenSaturation(rs.getInt("oxygen_saturation"));
+            v.setBloodGlucose(rs.getDouble("blood_glucose"));
             return v;
         });
     }
@@ -57,6 +68,10 @@ public class VitalSignsDao {
             v.setBloodPressure(rs.getString("blood_pressure"));
             v.setHeartRate(rs.getInt("heart_rate"));
             v.setRespiratoryRate(rs.getInt("respiratory_rate"));
+            v.setWeight(rs.getDouble("weight"));
+            v.setHeight(rs.getDouble("height"));
+            v.setOxygenSaturation(rs.getInt("oxygen_saturation"));
+            v.setBloodGlucose(rs.getDouble("blood_glucose"));
             return v;
         });
     }

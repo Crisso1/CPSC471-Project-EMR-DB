@@ -14,6 +14,10 @@ public class VitalSigns {
     private String bloodPressure;  // e.g., "120/80"
     private Integer heartRate;     // bpm
     private Integer respiratoryRate; // breaths per minute
+    private Double weight;
+    private Double height;
+    private Integer oxygenSaturation;
+    private Double bloodGlucose;
 
     public VitalSigns() { }
 
@@ -34,4 +38,16 @@ public class VitalSigns {
 
     public Integer getRespiratoryRate() { return respiratoryRate; }
     public void setRespiratoryRate(Integer respiratoryRate) { this.respiratoryRate = respiratoryRate; }
+
+    public Double getWeight() { return weight; }
+    public void setWeight(Double weight) { this.weight = weight; }
+
+    public Double getHeight() { return height; }
+    public void setHeight(Double height) { this.height = height; }
+
+    public Integer getOxygenSaturation() { return oxygenSaturation; }
+    public void setOxygenSaturation(Integer oxygenSaturation) { this.oxygenSaturation = oxygenSaturation; }
+
+    public Double getBloodGlucose() { return bloodGlucose; }
+    public void setBloodGlucose(Double bloodGlucose) { this.bloodGlucose = bloodGlucose; }
 }
