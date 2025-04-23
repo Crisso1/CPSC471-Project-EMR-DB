@@ -1,8 +1,11 @@
 package com.example.emr.controller;
 
+import com.example.emr.dao.EncounterDao;
 import com.example.emr.dao.PatientDao;
+import com.example.emr.model.Encounter;
 import com.example.emr.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,12 +52,18 @@ public class PatientController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePatient(@PathVariable Long id) {
-        Patient existing = patientDao.getPatientById(id);
-        if (existing != null) {
-            patientDao.deletePatientById(id);
-            return ResponseEntity.ok("Patient deleted successfully");
-        } else {
-            return ResponseEntity.notFound().build();
+        System.out.println("Delete request received for id: " + id);
+        try {
+            Patient existing = patientDao.getPatientById(id);
+            if (existing != null) {
+                patientDao.deletePatientById(id);
+                return ResponseEntity.ok("Patient deleted successfully");
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error: " + e.getMessage());
         }
     }
 }

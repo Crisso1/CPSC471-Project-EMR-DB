@@ -13,6 +13,8 @@ public class PatientDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private EncounterDao encounterDao;
 
     public Patient addPatient(Patient patient) {
         String sql = "INSERT INTO patients (fname, lname, dob, address, contact) VALUES (?, ?, ?, ?, ?) RETURNING *";
@@ -35,9 +37,14 @@ public class PatientDao {
     }
 
     public int deletePatientById(long id) {
+        // Delete all encounters related to the patient first
+        encounterDao.deleteEncountersByPatientId(id);
+
+        // Now delete the patient
         String sql = "DELETE FROM patients WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
 
     public Patient getPatientById(long id) {
         String sql = "SELECT * FROM patients WHERE id = ?";
