@@ -21,7 +21,7 @@ public class EncounterController {
     public ResponseEntity<String> addEncounter(@RequestBody Encounter encounter) {
         int rows = encounterDao.addEncounter(encounter);
         if (rows > 0) {
-            return ResponseEntity.ok("Encounter added successfully");
+            return ResponseEntity.ok(String.valueOf(encounter.getEncounterId()));
         } else {
             return ResponseEntity.status(500).body("Error adding encounter");
         }

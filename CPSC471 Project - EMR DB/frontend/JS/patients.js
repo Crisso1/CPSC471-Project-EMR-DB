@@ -143,6 +143,31 @@ document.addEventListener("DOMContentLoaded", () => {
     // — View button → populate view modal
     if (e.target.matches(".btn-outline-secondary")) {
       currentPatientId = id;
+
+      assessmentList.innerHTML = "";
+
+      fetch(`http://localhost:8080/api/encounters/patients/${parseInt(currentPatientId, 10)}`)
+          .then(response => {
+            if (!response.ok) throw new Error("Failed to load encounters");
+            return response.json();
+          })
+          .then(encounters => {
+            // Now you can loop through the encounters and show them how you want
+            assessmentsMap[currentPatientId] = encounters;
+            encounters.forEach(enc => {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "list-group-item list-group-item-action";
+              btn.textContent = `${enc.visitDate} Patient Assessment Report`;
+              btn.dataset.id = enc.id; // or whatever data you want to store
+              btn.dataset.idx = encounters.indexOf(enc);
+              assessmentList.appendChild(btn);
+            });
+          })
+          .catch(err => {
+            console.error("Error fetching encounters:", err);
+          });
+
       // clear all view spans
       [
         vpFName, vpLName, vpAge, vpWeight, vpHeight,
@@ -159,17 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
       vpAge.textContent  = String(
         new Date().getFullYear() - new Date(cells[3].textContent).getFullYear()
       );
-
-      // list existing assessments
-      assessmentList.innerHTML = "";
-      (assessmentsMap[id] || []).forEach((a, idx) => {
-        const btn = document.createElement("button");
-        btn.type      = "button";
-        btn.className = "list-group-item list-group-item-action";
-        btn.textContent = `${a.date} Patient Assessment Report`;
-        btn.dataset.idx = idx;
-        assessmentList.appendChild(btn);
-      });
 
       viewModal.show();
     }
@@ -216,12 +230,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Confirm delete in modal
   confirmDeleteBtn.addEventListener("click", () => {
     if (!currentDeleteRow) return;
-    const pid = currentDeleteRow.dataset.id;
+    const pid = parseInt(currentDeleteRow.dataset.id, 10);
     currentDeleteRow.remove();
     delete assessmentsMap[pid];
     deleteModal.hide();
     fetch(`http://localhost:8080/api/patients/${pid}`, { method: "DELETE" }).catch(console.error);
     currentDeleteRow = null;
+    console.log("Deleting patient with ID:", pid, typeof pid);
   });
 
   // Cancel delete
@@ -262,65 +277,113 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!e.target.matches(".list-group-item")) return;
     const a = assessmentsMap[currentPatientId][e.target.dataset.idx];
 
-    detailComplaint.textContent   = a.complaint   || "";
+    detailComplaint.textContent   = a.chiefComplaint   || "";
     detailHistory.textContent     = a.history     || "";
-    detailMedications.textContent = a.medications || "";
+    //detailMedications.textContent = a.medications || "";
     detailNotes.textContent       = a.notes       || "";
     detailDiagnosis.textContent   = a.diagnosis   || "";
-    detailPlan.textContent        = a.plan        || "";
+    detailPlan.textContent        = a.treatmentPlan        || "";
 
-    // vitals
-    vpHeartRate.textContent     = a.heartRate    || "";
-    vpBloodPressure.textContent = a.bloodPressure|| "";
-    vpOxygen.textContent        = a.oxygenSat    || "";
-    vpRespiration.textContent   = a.respiration  || "";
-    vpTemperature.textContent   = a.temperature  || "";
-    vpBloodGlucose.textContent  = a.bloodGlucose || "";
-
-    // allergies
-    vpAllergies.textContent     = a.allergies    || "";
-
-    // weight/height
-    vpWeight.textContent = a.weight || "";
-    vpHeight.textContent = a.height || "";
+    // FETCH VITAL SIGNS by encounter ID!
+    fetch(`http://localhost:8080/api/vitalsigns/encounter/${a.encounterId}`)
+        .then(res => res.json())
+        .then(vsList => {
+          const v = vsList[0] || {}; // take first one
+          vpHeartRate.textContent     = v.heartRate || "";
+          vpBloodPressure.textContent = v.bloodPressure || "";
+          vpOxygen.textContent        = v.oxygenSat || "";
+          vpRespiration.textContent   = v.respiratoryRate || "";
+          vpTemperature.textContent   = v.temperature || "";
+          vpBloodGlucose.textContent  = v.bloodGlucose || "";
+          vpWeight.textContent        = v.weight || "";
+          vpHeight.textContent        = v.height || "";
+        })
+        .catch(err => {
+          console.error("Could not fetch vitals", err);
+        });
   });
 
   // Save new assessment
   document.getElementById("addAssessmentForm")
-    .addEventListener("submit", e => {
-      e.preventDefault();
-      const id = currentPatientId;
-      const newA = {
-        weight:       document.getElementById("assessWeight").value,
-        height:       document.getElementById("assessHeight").value,
-        heartRate:    document.getElementById("assessHeartRate").value,
-        bloodPressure:document.getElementById("assessBloodPressure").value,
-        oxygenSat:    document.getElementById("assessOxygenSat").value,
-        respiration:  document.getElementById("assessRespiration").value,
-        temperature:  document.getElementById("assessTemperature").value,
-        bloodGlucose: document.getElementById("assessBloodGlucose").value,
-        date:         document.getElementById("assessmentDate").value,
-        complaint:    document.getElementById("assessmentComplaint").value,
-        history:      document.getElementById("assessmentHistory").value,
-        medications:  document.getElementById("assessmentMedications").value,
-        notes:        document.getElementById("assessmentNotes").value,
-        diagnosis:    document.getElementById("assessmentDiagnosis").value,
-        plan:         document.getElementById("assessmentPlan").value,
-        allergies:    document.getElementById("assessmentAllergies").value
-      };
+      .addEventListener("submit", e => {
+        e.preventDefault();
+        const id = currentPatientId;
 
-      assessmentsMap[id] = assessmentsMap[id] || [];
-      assessmentsMap[id].push(newA);
+        const newA = {
+          patientId:     id,
+          doctorSsn:     "123456",
+          visitDate:     document.getElementById("assessmentDate").value,
+          visitTime:     "09:00:00",
+          visitType:     "unknown",
+          chiefComplaint:document.getElementById("assessmentComplaint").value,
+          diagnosis:     document.getElementById("assessmentDiagnosis").value,
+          treatmentPlan: document.getElementById("assessmentPlan").value,
+          notes:         document.getElementById("assessmentNotes").value,
+          followUpDate:  "2024-04-01"
+        };
 
-      const btn = document.createElement("button");
-      btn.type      = "button";
-      btn.className = "list-group-item list-group-item-action";
-      btn.textContent = `${newA.date} Patient Assessment Report`;
-      btn.dataset.idx = assessmentsMap[id].length - 1;
-      assessmentList.appendChild(btn);
+        // First, create the encounter
+        fetch("http://localhost:8080/api/encounters", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(newA)
+        })
+            .then(res => {
+              if (!res.ok) throw new Error("Failed to save encounter");
+              return res.text(); // Now returns the encounter ID as a string
+            })
+            .then(encounterIdStr => {
+              const encounterId = parseInt(encounterIdStr, 10);
+              newA.encounterId = encounterId;
+              console.log("Saved encounter ID:", encounterId);
 
-      addAssessModal.hide();
-      viewModal.show();
-      e.target.reset();
-    });
+              // Now create the vital signs and link it to the encounter
+              const newVS = {
+                encounterId:      encounterId,
+                measuredAt:       document.getElementById("assessmentDate").value + "T09:00:00",
+                temperature:      document.getElementById("assessTemperature").value,
+                bloodPressure:    document.getElementById("assessBloodPressure").value,
+                heartRate:        document.getElementById("assessHeartRate").value,
+                respiratoryRate:  document.getElementById("assessRespiration").value,
+                weight:           document.getElementById("assessWeight").value,
+                height:           document.getElementById("assessHeight").value,
+                oxygenSat:        document.getElementById("assessOxygenSat").value,
+                bloodGlucose:     document.getElementById("assessBloodGlucose").value
+              };
+
+              return fetch("http://localhost:8080/api/vitalsigns", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newVS)
+              }).then(vsRes => {
+                if (!vsRes.ok) throw new Error("Failed to save vital signs");
+                return vsRes.text();
+              }).then(vsMsg => {
+
+                // Update UI
+                assessmentsMap[id] = assessmentsMap[id] || [];
+                assessmentsMap[id].push(newA);
+
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "list-group-item list-group-item-action";
+                btn.textContent = `${newA.visitDate} Patient Assessment Report`;
+                btn.dataset.idx = assessmentsMap[id].length - 1;
+                assessmentList.appendChild(btn);
+
+                addAssessModal.hide();
+                viewModal.show();
+                e.target.reset();
+              });
+            })
+            .catch(err => {
+              console.error("Error saving assessment or vital signs:", err);
+              alert("Failed to save assessment or vital signs.");
+            });
+      });
+
 });

@@ -16,18 +16,26 @@ public class VitalSignsDao {
 
     /** Inserts a new vital signs record */
     public int addVitalSigns(VitalSigns v) {
+
+        System.out.println("Saving vital signs: " + v);
+
         String sql = """
             INSERT INTO VitalSigns
-              (encounter_id, measured_at, temperature, blood_pressure, heart_rate, respiratory_rate)
-            VALUES (?, ?, ?, ?, ?, ?)
+              (encounter_id, measured_at, temperature, blood_pressure, heart_rate, respiratory_rate, weight, height, oxygen_saturation, blood_glucose, patient_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
         return jdbcTemplate.update(sql,
                 v.getEncounterId(),
-                Timestamp.valueOf(v.getMeasuredAt()),
+                v.getMeasuredAt() != null ? Timestamp.valueOf(v.getMeasuredAt()) : null,
                 v.getTemperature(),
                 v.getBloodPressure(),
                 v.getHeartRate(),
-                v.getRespiratoryRate()
+                v.getRespiratoryRate(),
+                v.getWeight(),
+                v.getHeight(),
+                v.getOxygenSat(),
+                v.getBloodGlucose(),
+                v.getPatientId()
         );
     }
 
@@ -42,6 +50,11 @@ public class VitalSignsDao {
             v.setBloodPressure(rs.getString("blood_pressure"));
             v.setHeartRate(rs.getInt("heart_rate"));
             v.setRespiratoryRate(rs.getInt("respiratory_rate"));
+            v.setWeight(rs.getInt("weight"));
+            v.setHeight(rs.getInt("height"));
+            v.setOxygenSat(rs.getInt("oxygen_saturation"));
+            v.setBloodGlucose(rs.getInt("blood_glucose"));
+            v.setPatientId(rs.getInt("patient_id"));
             return v;
         });
     }
@@ -57,7 +70,17 @@ public class VitalSignsDao {
             v.setBloodPressure(rs.getString("blood_pressure"));
             v.setHeartRate(rs.getInt("heart_rate"));
             v.setRespiratoryRate(rs.getInt("respiratory_rate"));
+            v.setWeight(rs.getInt("weight"));
+            v.setHeight(rs.getInt("height"));
+            v.setOxygenSat(rs.getInt("oxygen_saturation"));
+            v.setBloodGlucose(rs.getInt("blood_glucose"));
+            v.setPatientId(rs.getInt("patient_id"));
             return v;
         });
+    }
+
+    public int deleteVitalSignsByEncounterId(long encounterId) {
+        String sql = "DELETE FROM vitalsigns WHERE encounter_id = ?";
+        return jdbcTemplate.update(sql, encounterId);
     }
 }
