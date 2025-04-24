@@ -30,7 +30,7 @@ CREATE TABLE MedicalRecord (
                                PatientSsn INT NOT NULL,
                                ProcedureCondition VARCHAR(30) NOT NULL,
                                Date DATE,
-                               FOREIGN KEY (PatientSsn) REFERENCES Patient(Ssn)
+                               FOREIGN KEY (PatientSsn) REFERENCES Patients(id)
 );
 
 -- Create the Appointment table
@@ -40,7 +40,7 @@ CREATE TABLE Appointment (
                              Date DATE NOT NULL,
                              Time TIME NOT NULL,
                              FOREIGN KEY (DoctorSsn) REFERENCES Doctor(ssn),
-                             FOREIGN KEY (PatientSsn) REFERENCES Patient(ssn)
+                             FOREIGN KEY (PatientSsn) REFERENCES Patients(id)
 );
 
 -- Create the Medication table
@@ -66,7 +66,7 @@ CREATE TABLE Prescription (
                               PrescriptionNum INT NOT NULL,
                               DateGiven DATE,
                               PRIMARY KEY (PrescriptionNum),
-                              FOREIGN KEY (PatientSsn) REFERENCES Patient(Ssn),
+                              FOREIGN KEY (PatientSsn) REFERENCES Patients(id),
                               FOREIGN KEY (DoctorSsn) REFERENCES Doctor(Ssn)
 );
 
@@ -102,7 +102,7 @@ CREATE TABLE Encounter (
                            treatment_plan  TEXT,                      -- what was done / prescribed
                            notes           TEXT,                      -- free‑text for any extra details
                            follow_up_date  DATE,                      -- recommended next visit
-                           FOREIGN KEY (patient_ssn) REFERENCES Patient(Ssn),
+                           FOREIGN KEY (patient_ssn) REFERENCES Patients(id),
                            FOREIGN KEY (doctor_ssn)  REFERENCES Doctor(Ssn)
 );
 
@@ -113,7 +113,7 @@ CREATE TABLE Allergy (
                          reaction    VARCHAR(255),                  -- e.g., "Hives", "Anaphylaxis"
                          severity    VARCHAR(50),                   -- e.g., "Mild", "Severe"
                          PRIMARY KEY (patient_ssn, allergen),
-                         FOREIGN KEY (patient_ssn) REFERENCES Patient(Ssn)
+                         FOREIGN KEY (patient_ssn) REFERENCES Patients(id)
 );
 
 -- 3. Medication List
@@ -125,7 +125,7 @@ CREATE TABLE MedicationList (
                                 start_date      DATE,
                                 end_date        DATE,
                                 PRIMARY KEY (patient_ssn, medication_name),
-                                FOREIGN KEY (patient_ssn) REFERENCES Patient(Ssn)
+                                FOREIGN KEY (patient_ssn) REFERENCES Patients(id)
 );
 
 -- 4. Vital Signs (per Encounter)
