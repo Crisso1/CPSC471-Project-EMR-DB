@@ -68,7 +68,21 @@ public class AppointmentDao {
     public int updateAppointment(Appointment a) {
         String sql = """
         UPDATE Appointment 
-        SET DoctorSsn = ?, Patientid = ?, Date = ?, Time = ? 
+        SET Date = ?, Time = ? 
+        WHERE DoctorSsn = ? AND Patientid = ?
+    """;
+
+        return jdbcTemplate.update(sql,
+                Date.valueOf(a.getDate()),
+                Time.valueOf(a.getTime()),
+                a.getDoctorSsn(),
+                a.getPatientId()
+        );
+    }
+
+    public int deleteAppointment(Appointment a) {
+        String sql = """
+        DELETE FROM Appointment 
         WHERE DoctorSsn = ? AND Patientid = ? AND Date = ? AND Time = ?
     """;
 
@@ -76,11 +90,6 @@ public class AppointmentDao {
                 a.getDoctorSsn(),
                 a.getPatientId(),
                 Date.valueOf(a.getDate()),
-                Time.valueOf(a.getTime()),
-                a.getDoctorSsn(), // To uniquely identify the appointment (ensure the correct one is updated)
-                a.getPatientId(),
-                Date.valueOf(a.getDate()),
-                Time.valueOf(a.getTime())
-        );
+                Time.valueOf(a.getTime()));
     }
 }

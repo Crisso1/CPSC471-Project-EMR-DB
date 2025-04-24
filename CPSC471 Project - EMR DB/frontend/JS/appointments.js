@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let selectedCell = null;
     let selectedDate = null;
+    let patients = [];
+    let doctors = [];
 
     document.getElementById("addAppointmentBtn").addEventListener("click", () => {
         if (selectedDate) {
@@ -25,8 +27,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    const patients = ["Alice Smith", "Bob Johnson", "Charlie Rose"];
-    const doctors = ["Dr. Grey", "Dr. House", "Dr. Watson"];
+    async function preloadData() {
+        try {
+            const patientResponse = await fetch('http://localhost:8080/api/patients');
+            patients = await patientResponse.json();
+
+            const doctorResponse = await fetch('http://localhost:8080/api/doctors');
+            doctors = await doctorResponse.json();
+        } catch (err) {
+            console.error("Error loading patient/doctor data:", err);
+        }
+    }
+
+// Load all initial data when page loads
+    preloadData();
 
     // Populate dropdowns
     const populateDropdown = (elementId, list) => {
@@ -187,11 +201,23 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // 🔍 Check for duplicate appointment with same doctor & patient
+        const allAppointments = document.querySelectorAll(".appointment-entry");
+        const duplicate = Array.from(allAppointments).some(div =>
+            div.dataset.patient === patientId &&
+            div.dataset.doctor === doctorSsn
+        );
+
+        if (duplicate) {
+            alert("This doctor and patient already have an appointment. Only one allowed.");
+            return;
+        }
+
         const appointmentData = {
             doctorSsn: parseInt(doctorSsn),
             patientId: parseInt(patientId),
-            date: selectedDate.toISOString().split("T")[0], // format: yyyy-MM-dd
-            time: time // already in HH:mm
+            date: selectedDate.toISOString().split("T")[0],
+            time: time
         };
 
         try {
@@ -228,10 +254,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const viewModal = new bootstrap.Modal(document.getElementById("viewAppointmentModal"));
     let currentEditingDiv = null;
 
-// Populate dropdowns in edit form
-    populateDropdown("editPatient", patients);
-    populateDropdown("editDoctor", doctors);
-
     // Clicking an existing appointment
     calendar.addEventListener("click", (e) => {
         const apptDiv = e.target.closest(".appointment-entry");
@@ -239,66 +261,147 @@ document.addEventListener("DOMContentLoaded", () => {
 
         currentEditingDiv = apptDiv;
 
-        // Load dropdowns into edit modal
-        loadDropdowns('editPatient', 'editDoctor').then(() => {
-            document.getElementById("editTime").value = apptDiv.dataset.time;
-            document.getElementById("editDate").value = new Date(apptDiv.dataset.date).toISOString().split('T')[0];
+        document.getElementById("editTime").value = apptDiv.dataset.time;
+        document.getElementById("editDate").value = new Date(apptDiv.dataset.date).toISOString().split('T')[0];
 
-            const patientId = apptDiv.dataset.patient;
-            const doctorSsn = apptDiv.dataset.doctor;
+        const patientId = apptDiv.dataset.patient;
+        const doctorSsn = apptDiv.dataset.doctor;
 
-            const patient = patients.find(p => p.id == patientId);
-            const doctor = doctors.find(d => d.ssn == doctorSsn);
+        // Use your previously fetched arrays of patients and doctors
+        const patient = patients.find(p => p.id == patientId);
+        const doctor = doctors.find(d => d.ssn == doctorSsn);
 
-            document.getElementById("editPatientText").textContent = patient ? `${patient.fname} ${patient.lname}` : patientId;
-            document.getElementById("editDoctorText").textContent = doctor ? `${doctor.fname} ${doctor.lname}` : doctorSsn;
+        document.getElementById("editPatientText").textContent = patient ? `${patient.fname} ${patient.lname}` : patientId;
+        document.getElementById("editDoctorText").textContent = doctor ? `${doctor.fname} ${doctor.lname}` : doctorSsn;
 
-            document.getElementById("editPatient").value = patientId;
-            document.getElementById("editDoctor").value = doctorSsn;
+        // Still store the hidden ID/SSN for form submission
+        document.getElementById("editPatient").value = patientId;
+        document.getElementById("editDoctor").value = doctorSsn;
 
-
-            viewModal.show();
-        });
+        viewModal.show();
     });
+
 
     // Edit appointment
-    document.getElementById("editAppointmentForm").addEventListener("submit", (e) => {
+    document.getElementById("editAppointmentForm").addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const newTime = document.getElementById("editTime").value;
-        const newDoctor = document.getElementById("editDoctor").value;
         const newDate = document.getElementById("editDate").value;
+        const newDoctor = document.getElementById("editDoctor").value;
+        const newPatient = document.getElementById("editPatient").value;
 
-        currentEditingDiv.dataset.time = newTime;
-        currentEditingDiv.dataset.date = new Date(newDate).toDateString(); // update DOM date
+        if (!newTime || !newDate || !newDoctor || !newPatient) {
+            alert("All fields are required.");
+            return;
+        }
 
-        // patient and doctor remain the same because they are unchangeable
-        currentEditingDiv.innerHTML = `<strong>${newTime}</strong> <small>${newDoctor}</small>`;
+        const appointmentData = {
+            doctorSsn: parseInt(newDoctor),
+            patientId: parseInt(newPatient),
+            date: newDate,
+            time: newTime
+        };
 
+        try {
+            const response = await fetch("http://localhost:8080/api/appointments", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(appointmentData)
+            });
 
-        viewModal.hide();
+            if (response.ok) {
+                // Update DOM
+                currentEditingDiv.dataset.time = newTime;
+                currentEditingDiv.dataset.date = new Date(newDate).toDateString();
+                currentEditingDiv.innerHTML = `<strong>${newTime}</strong> <small>${newDoctor}</small>`;
+                viewModal.hide();
+
+                // Re-render calendar to reflect changes
+                const updatedDate = new Date(newDate);
+                if (
+                    updatedDate.getMonth() === parseInt(monthSelect.value) &&
+                    updatedDate.getFullYear() === parseInt(yearSelect.value)
+                ) {
+                    renderCalendar(parseInt(monthSelect.value), parseInt(yearSelect.value));
+                } else {
+                    // If the updated date is outside current view, switch to that month/year
+                    monthSelect.value = updatedDate.getMonth();
+                    yearSelect.value = updatedDate.getFullYear();
+                    renderCalendar(updatedDate.getMonth(), updatedDate.getFullYear());
+                }
+            } else {
+                const errorText = await response.text();
+                alert("Failed to update appointment: " + errorText);
+            }
+        } catch (err) {
+            console.error("Error updating appointment:", err);
+            alert("An error occurred while updating the appointment.");
+        }
     });
 
+
     // Delete appointment
-    document.getElementById("deleteAppointmentBtn").addEventListener("click", () => {
-        if (confirm("Are you sure you want to delete this appointment?")) {
-            currentEditingDiv.remove();
-            viewModal.hide();
+    document.getElementById("deleteAppointmentBtn").addEventListener("click", async () => {
+        if (!currentEditingDiv) return;
+
+        if (!confirm("Are you sure you want to delete this appointment?")) return;
+
+        const appointmentData = {
+            doctorSsn: parseInt(currentEditingDiv.dataset.doctor),
+            patientId: parseInt(currentEditingDiv.dataset.patient),
+            date: new Date(currentEditingDiv.dataset.date).toISOString().split('T')[0],
+            time: currentEditingDiv.dataset.time
+        };
+
+        try {
+            const response = await fetch("http://localhost:8080/api/appointments", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(appointmentData)
+            });
+
+            if (response.ok) {
+                currentEditingDiv.remove();
+                viewModal.hide();
+            } else {
+                const errorText = await response.text();
+                alert("Failed to delete appointment: " + errorText);
+            }
+        } catch (err) {
+            console.error("Error deleting appointment:", err);
+            alert("An error occurred while deleting the appointment.");
         }
     });
 
     async function loadAppointments() {
         try {
-            const response = await fetch("http://localhost:8080/api/appointments");
-            if (!response.ok) throw new Error("Failed to fetch appointments");
-            const appointments = await response.json();
+            const [appointmentsRes, doctorsRes] = await Promise.all([
+                fetch("http://localhost:8080/api/appointments"),
+                fetch("http://localhost:8080/api/doctors")
+            ]);
+
+            if (!appointmentsRes.ok || !doctorsRes.ok) throw new Error("Failed to fetch data");
+
+            const appointments = await appointmentsRes.json();
+            const doctors = await doctorsRes.json();
+
+            const doctorMap = {};
+            doctors.forEach(d => {
+                doctorMap[d.ssn] = d.lname; // map SSN to last name
+            });
 
             appointments.forEach(a => {
-                const apptDate = new Date(a.date);
+                const [yearStr, monthStr, dayStr] = a.date.split("-");
+                const apptDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, parseInt(dayStr));
                 const day = apptDate.getDate();
                 const month = apptDate.getMonth();
                 const year = apptDate.getFullYear();
 
-                // Only render if the calendar is currently showing this month/year
                 if (month === parseInt(monthSelect.value) && year === parseInt(yearSelect.value)) {
                     const cell = [...calendar.querySelectorAll(".calendar-cell[data-day]")]
                         .find(c => parseInt(c.dataset.day) === day);
@@ -310,7 +413,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         appointmentDiv.dataset.patient = a.patientId;
                         appointmentDiv.dataset.doctor = a.doctorSsn;
                         appointmentDiv.dataset.date = a.date;
-                        appointmentDiv.innerHTML = `<strong>${a.time}</strong> <small>${a.doctorSsn}</small>`;
+
+                        const doctorName = doctorMap[a.doctorSsn] || a.doctorSsn; // fallback to SSN if not found
+                        appointmentDiv.innerHTML = `<strong>${a.time}</strong> <small>${doctorName}</small>`;
+
                         cell.querySelector(".appointments").appendChild(appointmentDiv);
                     }
                 }

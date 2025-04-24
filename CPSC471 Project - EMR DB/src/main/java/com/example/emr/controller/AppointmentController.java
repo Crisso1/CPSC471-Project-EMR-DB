@@ -46,4 +46,13 @@ public class AppointmentController {
                 ? ResponseEntity.ok("Appointment updated successfully")
                 : ResponseEntity.status(500).body("Failed to update appointment");
     }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAppointment(@RequestBody Appointment a) {
+        int rows = appointmentDao.deleteAppointment(a);
+        return (rows > 0)
+                ? ResponseEntity.ok("Appointment deleted successfully")
+                : ResponseEntity.status(500).body("Failed to delete appointment");
+    }
+
 }
