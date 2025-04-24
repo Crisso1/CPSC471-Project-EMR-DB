@@ -3,13 +3,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const addBtn = document.getElementById("addAppointmentBtn");
     const appointmentForm = document.getElementById("appointmentForm");
     const selectedDateText = document.getElementById("selectedDateText");
-    const appointmentModal = new bootstrap.Modal(document.getElementById("appointmentModal"));
+    const appointmentModalEl = document.getElementById("appointmentModal");
+    const appointmentModal = new bootstrap.Modal(appointmentModalEl);
+
+    appointmentModalEl.addEventListener("hidden.bs.modal", () => {
+        appointmentForm.reset();
+        selectedDateText.textContent = "";
+    });
 
     const monthSelect = document.getElementById("monthSelect");
     const yearSelect = document.getElementById("yearSelect");
 
     let selectedCell = null;
     let selectedDate = null;
+
+    document.getElementById("addAppointmentBtn").addEventListener("click", () => {
+        if (selectedDate) {
+            document.getElementById("selectedDateText").textContent = selectedDate;
+            loadDropdowns();
+            appointmentModal.show();
+        }
+    });
 
     const patients = ["Alice Smith", "Bob Johnson", "Charlie Rose"];
     const doctors = ["Dr. Grey", "Dr. House", "Dr. Watson"];
@@ -72,15 +86,18 @@ document.addEventListener("DOMContentLoaded", () => {
             col.className = "col";
             if (i >= firstDay && dayNum <= daysInMonth) {
                 col.innerHTML = `
-          <div class="calendar-cell border rounded p-2" data-day="${dayNum}">
-            <div class="day-label fw-bold">${dayNum}</div>
-            <div class="appointments mt-2"></div>
-          </div>`;
+                <div class="calendar-cell border rounded p-2" data-day="${dayNum}">
+                    <div class="day-label fw-bold">${dayNum}</div>
+                    <div class="appointments mt-2"></div>
+                </div>`;
             } else {
                 col.innerHTML = `<div class="calendar-cell p-2" style="visibility: hidden;"></div>`;
             }
             calendar.appendChild(col);
         }
+
+        // 🔥 Load appointments after the calendar has been rendered
+        loadAppointments();
     }
 
     renderCalendar(parseInt(monthSelect.value), parseInt(yearSelect.value));
@@ -111,30 +128,102 @@ document.addEventListener("DOMContentLoaded", () => {
         addBtn.disabled = false;
     });
 
+    document.getElementById("addAppointmentBtn").addEventListener("click", () => {
+        if (selectedDate) {
+            selectedDateText.textContent = selectedDate.toDateString();
+            loadDropdowns();
+            appointmentForm.reset(); // Optional: clears form if needed
+            appointmentModal.show(); // ✅ Use your single initialized modal instance
+        }
+    });
+
     // allow add appointment button to be clicked
     addBtn.addEventListener("click", () => {
         appointmentForm.reset();
         appointmentModal.show();
     });
 
+    async function loadDropdowns(patientSelectId = 'patient', doctorSelectId = 'doctor') {
+        try {
+            // Load Patients
+            const patientResponse = await fetch('http://localhost:8080/api/patients');
+            const patients = await patientResponse.json();
+            const patientSelect = document.getElementById(patientSelectId);
+            patientSelect.innerHTML = '<option value="">Select Patient</option>';
+            patients.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id;
+                option.textContent = `${p.fname} ${p.lname}`;
+                patientSelect.appendChild(option);
+            });
+
+            // Load Doctors
+            const doctorResponse = await fetch('http://localhost:8080/api/doctors');
+            const doctors = await doctorResponse.json();
+            const doctorSelect = document.getElementById(doctorSelectId);
+            doctorSelect.innerHTML = '<option value="">Select Doctor</option>';
+            doctors.forEach(d => {
+                const option = document.createElement('option');
+                option.value = d.ssn;
+                option.textContent = `${d.fname} ${d.lname}`;
+                doctorSelect.appendChild(option);
+            });
+
+        } catch (error) {
+            console.error('Failed to load dropdowns:', error);
+        }
+    }
+
     // submit new appointment
-    appointmentForm.addEventListener("submit", (e) => {
+    appointmentForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const time = document.getElementById("time").value;
-        const patient = document.getElementById("patient").value;
-        const doctor = document.getElementById("doctor").value;
+        const patientId = document.getElementById("patient").value;
+        const doctorSsn = document.getElementById("doctor").value;
 
-        const appointmentDiv = document.createElement("div");
-        appointmentDiv.className = "appointment-entry small border rounded bg-light p-1 mb-1 text-start";
-        appointmentDiv.dataset.time = time;
-        appointmentDiv.dataset.patient = patient;
-        appointmentDiv.dataset.doctor = doctor;
-        appointmentDiv.dataset.date = selectedDate.toDateString();
-        appointmentDiv.innerHTML = `<strong>${time}</strong> <small>${doctor}</small>`;
-        selectedCell.querySelector(".appointments").appendChild(appointmentDiv);
+        if (!selectedDate || !time || !patientId || !doctorSsn) {
+            alert("Please fill out all fields.");
+            return;
+        }
 
-        appointmentModal.hide();
+        const appointmentData = {
+            doctorSsn: parseInt(doctorSsn),
+            patientId: parseInt(patientId),
+            date: selectedDate.toISOString().split("T")[0], // format: yyyy-MM-dd
+            time: time // already in HH:mm
+        };
+
+        try {
+            const response = await fetch("http://localhost:8080/api/appointments", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(appointmentData)
+            });
+
+            if (response.ok) {
+                const appointmentDiv = document.createElement("div");
+                appointmentDiv.className = "appointment-entry small border rounded bg-light p-1 mb-1 text-start";
+                appointmentDiv.dataset.time = time;
+                appointmentDiv.dataset.patient = patientId;
+                appointmentDiv.dataset.doctor = doctorSsn;
+                appointmentDiv.dataset.date = selectedDate.toDateString();
+                appointmentDiv.innerHTML = `<strong>${time}</strong> <small>${doctorSsn}</small>`;
+                selectedCell.querySelector(".appointments").appendChild(appointmentDiv);
+
+                appointmentModal.hide();
+            } else {
+                const errorText = await response.text();
+                alert("Failed to add appointment: " + errorText);
+            }
+        } catch (err) {
+            console.error("Error submitting appointment:", err);
+            alert("An error occurred while adding the appointment.");
+        }
     });
+
 
     const viewModal = new bootstrap.Modal(document.getElementById("viewAppointmentModal"));
     let currentEditingDiv = null;
@@ -143,31 +232,48 @@ document.addEventListener("DOMContentLoaded", () => {
     populateDropdown("editPatient", patients);
     populateDropdown("editDoctor", doctors);
 
-// Clicking an existing appointment
+    // Clicking an existing appointment
     calendar.addEventListener("click", (e) => {
         const apptDiv = e.target.closest(".appointment-entry");
         if (!apptDiv) return;
 
         currentEditingDiv = apptDiv;
-        document.getElementById("viewDate").textContent = apptDiv.dataset.date;
-        document.getElementById("editTime").value = apptDiv.dataset.time;
-        document.getElementById("editPatient").value = apptDiv.dataset.patient;
-        document.getElementById("editDoctor").value = apptDiv.dataset.doctor;
 
-        viewModal.show();
+        // Load dropdowns into edit modal
+        loadDropdowns('editPatient', 'editDoctor').then(() => {
+            document.getElementById("editTime").value = apptDiv.dataset.time;
+            document.getElementById("editDate").value = new Date(apptDiv.dataset.date).toISOString().split('T')[0];
+
+            const patientId = apptDiv.dataset.patient;
+            const doctorSsn = apptDiv.dataset.doctor;
+
+            const patient = patients.find(p => p.id == patientId);
+            const doctor = doctors.find(d => d.ssn == doctorSsn);
+
+            document.getElementById("editPatientText").textContent = patient ? `${patient.fname} ${patient.lname}` : patientId;
+            document.getElementById("editDoctorText").textContent = doctor ? `${doctor.fname} ${doctor.lname}` : doctorSsn;
+
+            document.getElementById("editPatient").value = patientId;
+            document.getElementById("editDoctor").value = doctorSsn;
+
+
+            viewModal.show();
+        });
     });
 
     // Edit appointment
     document.getElementById("editAppointmentForm").addEventListener("submit", (e) => {
         e.preventDefault();
         const newTime = document.getElementById("editTime").value;
-        const newPatient = document.getElementById("editPatient").value;
         const newDoctor = document.getElementById("editDoctor").value;
+        const newDate = document.getElementById("editDate").value;
 
         currentEditingDiv.dataset.time = newTime;
-        currentEditingDiv.dataset.patient = newPatient;
-        currentEditingDiv.dataset.doctor = newDoctor;
+        currentEditingDiv.dataset.date = new Date(newDate).toDateString(); // update DOM date
+
+        // patient and doctor remain the same because they are unchangeable
         currentEditingDiv.innerHTML = `<strong>${newTime}</strong> <small>${newDoctor}</small>`;
+
 
         viewModal.hide();
     });
@@ -179,5 +285,39 @@ document.addEventListener("DOMContentLoaded", () => {
             viewModal.hide();
         }
     });
+
+    async function loadAppointments() {
+        try {
+            const response = await fetch("http://localhost:8080/api/appointments");
+            if (!response.ok) throw new Error("Failed to fetch appointments");
+            const appointments = await response.json();
+
+            appointments.forEach(a => {
+                const apptDate = new Date(a.date);
+                const day = apptDate.getDate();
+                const month = apptDate.getMonth();
+                const year = apptDate.getFullYear();
+
+                // Only render if the calendar is currently showing this month/year
+                if (month === parseInt(monthSelect.value) && year === parseInt(yearSelect.value)) {
+                    const cell = [...calendar.querySelectorAll(".calendar-cell[data-day]")]
+                        .find(c => parseInt(c.dataset.day) === day);
+
+                    if (cell) {
+                        const appointmentDiv = document.createElement("div");
+                        appointmentDiv.className = "appointment-entry small border rounded bg-light p-1 mb-1 text-start";
+                        appointmentDiv.dataset.time = a.time;
+                        appointmentDiv.dataset.patient = a.patientId;
+                        appointmentDiv.dataset.doctor = a.doctorSsn;
+                        appointmentDiv.dataset.date = a.date;
+                        appointmentDiv.innerHTML = `<strong>${a.time}</strong> <small>${a.doctorSsn}</small>`;
+                        cell.querySelector(".appointments").appendChild(appointmentDiv);
+                    }
+                }
+            });
+        } catch (err) {
+            console.error("Error loading appointments:", err);
+        }
+    }
 
 });

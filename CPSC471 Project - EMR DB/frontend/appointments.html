@@ -104,19 +104,26 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p><strong>Date:</strong> <span id="viewDate"></span></p>
+                    <div class="mb-3">
+                        <label class="form-label">Doctor</label>
+                        <p class="form-control-plaintext" id="editDoctorText"></p>
+                        <input type="hidden" id="editDoctor">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Patient</label>
+                        <p class="form-control-plaintext" id="editPatientText"></p>
+                        <input type="hidden" id="editPatient">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="editDate" required>
+                    </div>
 
                     <div class="mb-3">
                         <label for="editTime" class="form-label">Time</label>
                         <input type="time" class="form-control" id="editTime" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editPatient" class="form-label">Patient</label>
-                        <select class="form-select" id="editPatient" required></select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editDoctor" class="form-label">Doctor</label>
-                        <select class="form-select" id="editDoctor" required></select>
                     </div>
                 </div>
                 <div class="modal-footer">

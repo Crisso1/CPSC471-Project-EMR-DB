@@ -1,6 +1,7 @@
 package com.example.emr.dao;
 
 import com.example.emr.model.Appointment;
+import com.example.emr.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -62,5 +63,24 @@ public class AppointmentDao {
             a.setTime(rs.getTime("Time").toLocalTime());
             return a;
         });
+    }
+
+    public int updateAppointment(Appointment a) {
+        String sql = """
+        UPDATE Appointment 
+        SET DoctorSsn = ?, Patientid = ?, Date = ?, Time = ? 
+        WHERE DoctorSsn = ? AND Patientid = ? AND Date = ? AND Time = ?
+    """;
+
+        return jdbcTemplate.update(sql,
+                a.getDoctorSsn(),
+                a.getPatientId(),
+                Date.valueOf(a.getDate()),
+                Time.valueOf(a.getTime()),
+                a.getDoctorSsn(), // To uniquely identify the appointment (ensure the correct one is updated)
+                a.getPatientId(),
+                Date.valueOf(a.getDate()),
+                Time.valueOf(a.getTime())
+        );
     }
 }
