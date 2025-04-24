@@ -92,4 +92,9 @@ public class AppointmentDao {
                 Date.valueOf(a.getDate()),
                 Time.valueOf(a.getTime()));
     }
+
+    public int deleteAppointmentsByPatientId(long patientId) {
+        String sql = "DELETE FROM Appointment WHERE Patientid = ?";
+        return jdbcTemplate.update(sql, patientId);
+    }
 }
