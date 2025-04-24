@@ -1,0 +1,60 @@
+.top-icons {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    gap: 1rem;
+    z-index: 1000;
+}
+
+.icon-btn {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    color: #1677ff;
+    font-size: 1.25rem;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 1);
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
+
+.calendar-cell {
+    position: relative;
+    height: 120px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background-color: white;
+    transition: background-color 0.2s;
+}
+
+.calendar-cell:hover {
+    background-color: #f9f9f9;
+}
+
+.calendar-cell.selected {
+    border: 2px solid #007bff;
+    background-color: #e6f0ff;
+}
+
+.appointment-entry {
+    cursor: pointer;
+}
+
+.appointments .small {
+    font-size: 0.75rem;
+}
