@@ -15,6 +15,8 @@ public class PatientDao {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private EncounterDao encounterDao;
+    @Autowired
+    private AppointmentDao appointmentDao;
 
     public Patient addPatient(Patient patient) {
         String sql = "INSERT INTO patients (fname, lname, dob, address, contact) VALUES (?, ?, ?, ?, ?) RETURNING *";
@@ -37,6 +39,9 @@ public class PatientDao {
     }
 
     public int deletePatientById(long id) {
+        // Delete all appointments related to the patient first
+        appointmentDao.deleteAppointmentsByPatientId(id);
+
         // Delete all encounters related to the patient first
         encounterDao.deleteEncountersByPatientId(id);
 

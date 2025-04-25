@@ -80,7 +80,7 @@ public class VitalSignsDao {
     }
 
     public int deleteVitalSignsByEncounterId(long encounterId) {
-        String sql = "DELETE FROM vitalsigns WHERE encounter_id = ?";
+        String sql = "DELETE FROM VitalSigns WHERE encounter_id = ?";
         return jdbcTemplate.update(sql, encounterId);
     }
 }
